@@ -9,18 +9,41 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@edgestore/react": "^0.2.2",
+    "@edgestore/server": "^0.2.2",
+    "@next/font": "^14.2.11",
+    "@nextui-org/button": "^2.0.38",
+    "@nextui-org/checkbox": "^2.1.5",
+    "@nextui-org/dropdown": "^2.1.31",
+    "@nextui-org/input": "^2.2.5",
+    "@nextui-org/modal": "^2.0.41",
+    "@nextui-org/spinner": "^2.0.34",
+    "@nextui-org/system": "^2.2.6",
+    "@nextui-org/theme": "^2.2.11",
+    "@nextui-org/tooltip": "^2.0.41",
+    "@types/lodash.debounce": "^4.0.9",
+    "framer-motion": "^11.9.0",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.447.0",
+    "next": "14.2.11",
     "react": "^18",
+    "react-color": "^2.19.3",
     "react-dom": "^18",
-    "next": "14.2.11"
+    "react-dropzone": "^14.2.3",
+    "react-select": "^5.8.1",
+    "tailwind-merge": "^2.5.2",
+    "zod": "^3.23.8",
+    "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
+    "@types/react-color": "^3.0.12",
     "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.11",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.11"
+    "typescript": "^5"
   }
 }
