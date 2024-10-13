@@ -1,5 +1,5 @@
 "use client";
-import { useSideBarContextProvider } from "@/context/side-bar-contest";
+import { useSideBarContextProvider } from "@/context/side-bar-contest-context";
 import { SideBarItems } from "./type";
 import { useRouter } from "next/navigation";
 import { useLoadingContextProvider } from "@/context/loading-context";

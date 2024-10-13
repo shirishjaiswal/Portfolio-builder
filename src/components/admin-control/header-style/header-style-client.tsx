@@ -67,7 +67,6 @@ const HeaderStyleClient = () => {
           isDisabled={false}
           type="button"
           onClick={onSave}
-          addationalButtonStyles="w-400 h-10"
         />
       </div>
       {isLoading && (

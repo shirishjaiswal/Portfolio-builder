@@ -1,4 +1,5 @@
 import { UserNavigationContenContextProvider } from "@/context/user-navigation-content-context";
+import { UserProfileContextProvider } from "@/context/user-profile-context";
 
 export default function RootLayout({
   children,
@@ -7,7 +8,9 @@ export default function RootLayout({
 }>) {
   return (
     <UserNavigationContenContextProvider>
-      <div className="w-80p h-auto bg-white mx-8 py-8">{children}</div>
+      <UserProfileContextProvider>
+        <div className="w-80p h-auto bg-white mx-8 py-8">{children}</div>
+      </UserProfileContextProvider>
     </UserNavigationContenContextProvider>
   );
 }

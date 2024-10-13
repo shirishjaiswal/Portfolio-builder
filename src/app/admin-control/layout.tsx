@@ -1,6 +1,6 @@
 import Sidebar from "@/components/side-bar/side-bar-panel";
-import { NavigationSectionContentProvider } from "@/context/navigation-section-content";
-import { SideBarContextProvider } from "@/context/side-bar-contest";
+import { NavigationSectionContentProvider } from "@/context/navigation-section-content-context";
+import { SideBarContextProvider } from "@/context/side-bar-contest-context";
 
 export default function RootLayout({
   children,

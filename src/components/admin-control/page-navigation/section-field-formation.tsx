@@ -12,7 +12,7 @@ import {
 import { Input } from "@nextui-org/input";
 import { InputTypeSelection, SectionField } from "./type";
 import { CircleX } from "lucide-react";
-import { useNavigationSectionContentProvider } from "@/context/navigation-section-content";
+import { useNavigationSectionContentProvider } from "@/context/navigation-section-content-context";
 import ModalPopup from "@/components/Button/modalPopup";
 
 type FieldsEnabled = {
@@ -25,7 +25,7 @@ type FieldsEnabled = {
   list: boolean;
   email: boolean;
   phone: boolean;
-  checkbox: boolean;
+  droplinks: boolean;
   image: boolean;
 };
 
@@ -33,14 +33,14 @@ type SectionFieldProps = {
   navigationKey: string;
   sectionIdx: number;
   sectionFieldIdx: number;
-  sectionFields: SectionField;
+  sectionField: SectionField;
 };
 
 const SectionFieldFormation: React.FC<SectionFieldProps> = ({
   navigationKey,
   sectionIdx,
   sectionFieldIdx,
-  sectionFields,
+  sectionField: sectionFields,
 }: SectionFieldProps) => {
   const {
     removeSectionField,
@@ -51,6 +51,7 @@ const SectionFieldFormation: React.FC<SectionFieldProps> = ({
     updateFieldEndDate,
     updateFieldOnGoing,
     updateSelectionType,
+    updateSectionFieldIsRequired,
   } = useNavigationSectionContentProvider();
 
   const [fieldsEnabled, setFieldsEnabled] = useState<FieldsEnabled>();
@@ -66,7 +67,7 @@ const SectionFieldFormation: React.FC<SectionFieldProps> = ({
       list: sectionFields.selectionType === "list",
       email: sectionFields.selectionType === "email",
       phone: sectionFields.selectionType === "phone",
-      checkbox: sectionFields.selectionType === "checkbox",
+      droplinks: sectionFields.selectionType === "droplinks",
       image: sectionFields.selectionType === "image",
     });
   }, []);
@@ -83,7 +84,7 @@ const SectionFieldFormation: React.FC<SectionFieldProps> = ({
         list: false,
         email: false,
         phone: false,
-        checkbox: false,
+        droplinks: false,
         image: false,
       });
     } else {
@@ -97,7 +98,7 @@ const SectionFieldFormation: React.FC<SectionFieldProps> = ({
         list: option.value === "list",
         email: option.value === "email",
         phone: option.value === "phone",
-        checkbox: option.value === "checkbox",
+        droplinks: option.value === "droplinks",
         image: option.value === "image",
       });
     }
@@ -114,7 +115,6 @@ const SectionFieldFormation: React.FC<SectionFieldProps> = ({
   };
 
   const updateLabel = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(navigationKey, sectionIdx, sectionFieldIdx);
     updateFieldLabel(
       navigationKey,
       sectionIdx,
@@ -132,6 +132,9 @@ const SectionFieldFormation: React.FC<SectionFieldProps> = ({
     );
   };
 
+  const updateSectionFieldRequired = () => {
+    updateSectionFieldIsRequired(navigationKey, sectionIdx, sectionFieldIdx);
+  };
   const updateOptions = (options: string[]) => {
     updateFieldDropdownOptions(
       navigationKey,
@@ -200,7 +203,11 @@ const SectionFieldFormation: React.FC<SectionFieldProps> = ({
             fieldsEnabled.dropdown ||
             fieldsEnabled.link ||
             fieldsEnabled.calendar ||
-            fieldsEnabled.list) && (
+            fieldsEnabled.list ||
+            fieldsEnabled.email ||
+            fieldsEnabled.droplinks ||
+            fieldsEnabled.phone ||
+            fieldsEnabled.image) && (
             <div
               id="text-textarea-dropdown-calendar"
               className="flex w-full gap-4"
@@ -217,22 +224,10 @@ const SectionFieldFormation: React.FC<SectionFieldProps> = ({
                 errorMessage="Field cannot be empty"
                 onChange={(e) => updateLabel(e)}
               />
-              {/* <Input
-              className="w-1/3 text-roboto text-sm z-0"
-              type="text"
-              label="Placeholder"
-              labelPlacement="outside"
-              placeholder="Enter Placeholder text"
-              variant="underlined"
-              value={sectionFields.placeholder}
-              isInvalid={false}
-              errorMessage="Field cannot be empty"
-              onChange={(e) => updatePlaceholder(e)}
-            /> */}
             </div>
           )}
           {(!fieldsEnabled || fieldsEnabled.duration) && (
-            <div id="duration" className="flex w-full gap-4 mt-4">
+            <div id="duration" className="flex w-full gap">
               {DurationData.map((item) => (
                 <Checkbox
                   key={item.value}
@@ -247,8 +242,10 @@ const SectionFieldFormation: React.FC<SectionFieldProps> = ({
           )}
         </div>
         <div className="flex w-full gap-4">
-          {(!fieldsEnabled || fieldsEnabled.dropdown) && (
-            <div id="input-type" className="flex-col w-1/3 z-50 mt-4">
+          {(!fieldsEnabled ||
+            fieldsEnabled.dropdown ||
+            fieldsEnabled.droplinks) && (
+            <div id="input-type" className="flex-col w-1/3 z-50">
               <p className="font-roboto text-sm pb-2">
                 Dropdown Selection Type
               </p>
@@ -271,8 +268,10 @@ const SectionFieldFormation: React.FC<SectionFieldProps> = ({
               <div className="solid h-0.5 bg-slate-300"></div>
             </div>
           )}
-          {(!fieldsEnabled || fieldsEnabled.dropdown) && (
-            <div className="flex-col w-1/3 mt-4">
+          {(!fieldsEnabled ||
+            fieldsEnabled.dropdown ||
+            fieldsEnabled.droplinks) && (
+            <div className="flex-col w-1/3">
               <p className="font-roboto text-sm">Add Options</p>
               <CreatableSelect
                 isMulti
@@ -282,13 +281,23 @@ const SectionFieldFormation: React.FC<SectionFieldProps> = ({
                 styles={styleForTags}
                 value={sectionFields.dropdownOptions.map((option) => ({
                   label: option,
-                  value: option,
+                  value: option.toLowerCase().trim().split(" ").join("-"),
                 }))}
-                onChange={(e) => updateOptions(e.map((option) => option.value))}
+                onChange={(e) => updateOptions(e.map((option) => option.label))}
               />
               <div className="solid h-0.5 bg-slate-300"></div>
             </div>
           )}
+        </div>
+        <div className="w-full bg-slate-100 rounded">
+          <Checkbox
+            key={"ongoing"}
+            isSelected={sectionFields.isRequired}
+            onClick={updateSectionFieldRequired}
+            radius="sm"
+          >
+            {"Required"}
+          </Checkbox>
         </div>
       </div>
     </div>

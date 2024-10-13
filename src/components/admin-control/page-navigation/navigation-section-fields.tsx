@@ -1,7 +1,7 @@
 import Button from "@/components/Button/button";
 import SectionFieldFormation from "./section-field-formation";
 import { SectionField } from "./type";
-import { useNavigationSectionContentProvider } from "@/context/navigation-section-content";
+import { useNavigationSectionContentProvider } from "@/context/navigation-section-content-context";
 
 type NavigationSectionProps = {
   navigationKey: string;
@@ -12,6 +12,7 @@ type NavigationSectionProps = {
 const SECTIONFIELD: SectionField = {
   key: "",
   selectionType: "text",
+  isRequired: false,
   label: "",
   placeholder: "",
   textarea: "",
@@ -40,7 +41,7 @@ const NavigationSection: React.FC<NavigationSectionProps> = ({
             navigationKey={navigationKey}
             sectionIdx={sectionIdx}
             sectionFieldIdx={index}
-            sectionFields={sectionField}
+            sectionField={sectionField}
           />
         </div>
       ))}

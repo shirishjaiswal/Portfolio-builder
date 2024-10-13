@@ -5,23 +5,25 @@ import Loading from "@/components/loading/loading";
 import { useLoadingContextProvider } from "@/context/loading-context";
 import { useEffect, useRef } from "react";
 import NavigationSections from "./navigation-section";
-import { useNavigationSectionContentProvider } from "@/context/navigation-section-content";
+import { useNavigationSectionContentProvider } from "@/context/navigation-section-content-context";
 import NavigationTitles from "./navigation-titles";
 import Button from "@/components/Button/button";
-import { navigationSectionContentData } from "./static-data";
 import localstorage from "@/utils/storage/local-storage";
 
 const PageNavigationContentClient = () => {
   const { isLoading, updateIsLoading } = useLoadingContextProvider();
-  const { navigationSectionContent, updateNavigationSectionContent, } =
+  const { navigationSectionContent, updateNavigationSectionContent } =
     useNavigationSectionContentProvider();
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const c = localstorage.maps.getNavigationSectionContentMap();
+
   useEffect(() => {
     updateIsLoading(false);
-     updateNavigationSectionContent(c ?? navigationSectionContentData);
-  }, [updateNavigationSectionContent, updateIsLoading]);
+    if (navigationSectionContent.size <= 0 && c)
+      updateNavigationSectionContent(c);
+    else updateNavigationSectionContent(navigationSectionContent);
+  }, []);
 
   return (
     <>

@@ -5,9 +5,10 @@ import Button from "@/components/Button/button";
 import { reactSelectStyles } from "./styles";
 import { ReactSelectOption, SectionAndSelectionType } from "./static-data";
 import { NavigationSection, NavigationSectionContentMap } from "./type";
-import { useNavigationSectionContentProvider } from "@/context/navigation-section-content";
+import { useNavigationSectionContentProvider } from "@/context/navigation-section-content-context";
 import { ChevronDown, CircleX } from "lucide-react";
 import NavigationSectionFields from "./navigation-section-fields";
+import { Checkbox } from "@nextui-org/checkbox";
 
 export const getCurrentSection = (
   navigationSectionContent: NavigationSectionContentMap
@@ -29,11 +30,13 @@ const NavigationSections: React.FC<NavigationSectionProps> = ({
 }: NavigationSectionProps) => {
   const {
     navigationSectionContent,
-    addNavigationSection,
-    removeNavigationSection,
+    addSection,
+    removeSection,
     setCollapseSection,
     updateSectionName,
     updateSectionIsMulti,
+    updateIsSectionRequired,
+    updateShowSectionName,
   } = useNavigationSectionContentProvider();
 
   const [activeNavigationTab, setActiveNavigationTab] = useState<
@@ -72,19 +75,33 @@ const NavigationSections: React.FC<NavigationSectionProps> = ({
   const addNewSection = () => {
     const currentSectionKey = getCurrentSection(navigationSectionContent);
     if (!currentSectionKey) return;
-    addNavigationSection(currentSectionKey, {
+    addSection(currentSectionKey, {
       sectionName: "",
       isMulti: false,
       isCollapsed: false,
+      isSectionNameVisible: true,
+      isRequired: false,
       sectionFields: [],
     });
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const removeSection = (sectionIndex: number) => {
+  const removeSectionByIdx = (sectionIndex: number) => {
     const currentSectionKey = getCurrentSection(navigationSectionContent);
     if (!currentSectionKey) return;
-    removeNavigationSection(currentSectionKey, sectionIndex);
+    removeSection(currentSectionKey, sectionIndex);
+  };
+
+  const handleIsSectionRequired = (sectionIndex: number) => {
+    const currentSectionKey = getCurrentSection(navigationSectionContent);
+    if (!currentSectionKey) return;
+    updateIsSectionRequired(currentSectionKey, sectionIndex);
+  };
+
+  const handleShowSectionName = (sectionIndex: number) => {
+    const currentSectionKey = getCurrentSection(navigationSectionContent);
+    if (!currentSectionKey) return;
+    updateShowSectionName(currentSectionKey, sectionIndex);
   };
 
   const collapseSection = (sectionIndex: number) => {
@@ -117,7 +134,7 @@ const NavigationSections: React.FC<NavigationSectionProps> = ({
                   size={20}
                   strokeWidth={2}
                   absoluteStrokeWidth
-                  onClick={() => removeSection(index)}
+                  onClick={() => removeSectionByIdx(index)}
                 />
               </button>
             </div>
@@ -161,6 +178,22 @@ const NavigationSections: React.FC<NavigationSectionProps> = ({
                   />
                   <div className="solid h-0.5 bg-slate-300"></div>
                 </div>
+                <Checkbox
+                  key={"ongoing"}
+                  isSelected={section.isRequired}
+                  onClick={() => handleIsSectionRequired(index)}
+                  radius="sm"
+                >
+                  {"Required"}
+                </Checkbox>
+                <Checkbox
+                  key={"ongoing"}
+                  isSelected={section.isSectionNameVisible}
+                  onClick={() => handleShowSectionName(index)}
+                  radius="sm"
+                >
+                  {"Show Section Name"}
+                </Checkbox>
               </div>
               {section.sectionName && !section.isCollapsed && (
                 <NavigationSectionFields

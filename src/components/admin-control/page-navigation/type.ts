@@ -1,8 +1,9 @@
-export type InputTypeSelection = "text" | "textarea" | "dropdown" | "duration" | "calendar" | "link" | "list" | "email" | "phone" | "checkbox" |"image";
-
+export type InputTypeSelection = "text" | "textarea" | "dropdown" | "duration" | "calendar" | "link" | "list" | "email" | "phone" |"image" | "droplinks";
+//text , textarea , link , email , phone , dropdown , calendar , duration
 export type SectionField = {
   key: string;
   selectionType: InputTypeSelection;
+  isRequired: boolean;
   label: string;
   placeholder: string;
   textarea: string;
@@ -17,13 +18,14 @@ export type NavigationSection = {
   sectionName: string;
   isMulti: boolean;
   isCollapsed: boolean;
+  isSectionNameVisible: boolean;
+  isRequired: boolean;
   sectionFields: SectionField[];
 };
 
 export type NavigationSectionContent = {
   isActive: boolean;
   navigationName: string;
-  isSectionNameVisible: boolean;
   navigationSection: NavigationSection[];
 };
 

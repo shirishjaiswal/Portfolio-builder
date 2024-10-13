@@ -1,6 +1,6 @@
 "use client";
 
-import { useSideBarContextProvider } from "@/context/side-bar-contest";
+import { useSideBarContextProvider } from "@/context/side-bar-contest-context";
 import { SideBarItems } from "./type";
 import SideBarItem from "./sidebar-button";
 import { usePathname } from "next/navigation";

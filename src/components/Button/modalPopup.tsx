@@ -10,6 +10,12 @@ import Button from "./button";
 type ModalPopupProps = {
   warningTitle: React.ReactNode;
   warning: React.ReactNode;
+  buttonOnAction?: {
+    label: string;
+    onClick: () => void;
+    isActive: boolean;
+    isDisabled: boolean;
+  }[];
   onConfirm: () => void;
   isActive: boolean;
   label?: string;
@@ -20,6 +26,7 @@ const ModalPopup: React.FC<ModalPopupProps> = ({
   className,
   warningTitle,
   warning,
+  buttonOnAction,
   onConfirm,
   isActive,
   label,
@@ -29,6 +36,19 @@ const ModalPopup: React.FC<ModalPopupProps> = ({
 
   const handleClick = (onClose: () => void) => {
     onConfirm();
+    onClose();
+  };
+
+  const handleCustomButtons = (
+    onClose: () => void,
+    buttonData: {
+      label: string;
+      onClick: () => void;
+      isActive: boolean;
+      isDisabled: boolean;
+    }
+  ) => {
+    buttonData.onClick();
     onClose();
   };
   return (
@@ -85,6 +105,22 @@ const ModalPopup: React.FC<ModalPopupProps> = ({
                   isActive={false}
                   isDisabled={false}
                 />
+                {buttonOnAction &&
+                  buttonOnAction.length > 0 &&
+                  buttonOnAction.map((buttonData, index) => (
+                    <Button
+                      key={buttonData.label + index}
+                      type="button"
+                      label={buttonData.label}
+                      onClick={handleCustomButtons.bind(
+                        this,
+                        onClose,
+                        buttonData
+                      )}
+                      isActive={false}
+                      isDisabled={false}
+                    />
+                  ))}
               </ModalFooter>
             </>
           )}
