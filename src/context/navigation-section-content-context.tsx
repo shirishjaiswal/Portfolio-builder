@@ -21,10 +21,18 @@ interface NavigationSectionContentProps {
   updateNavigationSectionContent: (
     navigationSectionContent: NavigationSectionContentMap
   ) => void;
-  addNavigationSectionContent: (key: string) => void;
-  removeNavigationSection: (key: string, sectionIdx: number) => void;
-  addNavigationSection: (key: string, value: NavigationSection) => void;
-  updateNavigationTitle: (key: string, value: string) => void;
+  addNavigationTab: (navigationKey: string) => void;
+  removeSection: (navigationKey: string, sectionIdx: number) => void;
+  addSection: (
+    navigationKey: string,
+    value: NavigationSection
+  ) => void;
+  updateNavigationTabName: (navigationKey: string, value: string) => void;
+  updateIsSectionRequired: (navigationKey: string, value: number) => void;
+  updateShowSectionName: (
+    navigationKey: string,
+    value: number
+  ) => void;
   updateSectionIsMulti: (
     navigationKey: string,
     sectionIdx: number,
@@ -40,7 +48,13 @@ interface NavigationSectionContentProps {
     sectionIdx: number,
     value: SectionField
   ) => void;
-  updateActiveNavigationTab: (navigationKey: string) => void;
+  updateSectionFieldIsRequired: (
+    navigationKey: string,
+    sectionIdx: number,
+    fieldIdx: number,
+  ) => void;
+  updateNavigationTabIsActive: (navigationKey: string) => void;
+  removeNavigationTab: (navigationKey: string) => void;
   removeSectionField: (
     navigationKey: string,
     sectionIdx: number,
@@ -117,7 +131,44 @@ const NavigationSectionContentProvider = ({
     []
   );
 
-  const addNavigationSectionContent = useCallback(
+  const updateNavigationTabIsActive = useCallback(
+    (navigationKey: string) => {
+      const updatedNavigationSectionContent = new Map(navigationSectionContent);
+      updatedNavigationSectionContent.forEach((section) => {
+        section.isActive = false;
+      });
+      const currentValue = updatedNavigationSectionContent.get(navigationKey);
+      if (currentValue) {
+        currentValue.isActive = true;
+        updateNavigationSectionContent(updatedNavigationSectionContent);
+      }
+    },
+    [navigationSectionContent, updateNavigationSectionContent]
+  );
+
+  const removeNavigationTab = useCallback(
+    (navigationTabKey: string) => {
+      const updatedNavigationSectionContent = new Map(navigationSectionContent);
+      updatedNavigationSectionContent.delete(navigationTabKey);
+      updateNavigationSectionContent(updatedNavigationSectionContent);
+    },
+    [navigationSectionContent, updateNavigationSectionContent]
+  );
+
+  const updateNavigationTabName = useCallback(
+    (navigationKey: string, value: string) => {
+      const updatedNavigationSectionContent = new Map(navigationSectionContent);
+      const currentValue = updatedNavigationSectionContent.get(navigationKey);
+      if (currentValue) {
+        currentValue.navigationName = value;
+        updatedNavigationSectionContent.set(navigationKey, currentValue);
+        updateNavigationSectionContent(updatedNavigationSectionContent);
+      }
+    },
+    [navigationSectionContent, updateNavigationSectionContent]
+  );
+
+  const addNavigationTab = useCallback(
     (navigationKey: string) => {
       const updatedNavigationSectionContent = new Map(navigationSectionContent);
       updatedNavigationSectionContent.forEach((section) => {
@@ -126,7 +177,7 @@ const NavigationSectionContentProvider = ({
       const value = {
         navigationName:
           navigationKey.charAt(0).toUpperCase() + navigationKey.slice(1),
-        isSectionNameVisible: true,
+        isRequired: false,
         isActive: true,
         navigationSection: [],
       } as NavigationSectionContent;
@@ -136,22 +187,22 @@ const NavigationSectionContentProvider = ({
     [navigationSectionContent, updateNavigationSectionContent]
   );
 
-  const updateActiveNavigationTab = useCallback(
-    (key: string) => {
+  const updateShowSectionName = useCallback(
+    (navigationKey: string, sectionIdx: number) => {
       const updatedNavigationSectionContent = new Map(navigationSectionContent);
-      updatedNavigationSectionContent.forEach((section) => {
-        section.isActive = false;
-      });
-      const currentValue = updatedNavigationSectionContent.get(key);
+      const currentValue =
+        updatedNavigationSectionContent.get(navigationKey)?.navigationSection[
+          sectionIdx
+        ];
       if (currentValue) {
-        currentValue.isActive = true;
+        currentValue.isSectionNameVisible = !currentValue.isSectionNameVisible;
         updateNavigationSectionContent(updatedNavigationSectionContent);
       }
     },
     [navigationSectionContent, updateNavigationSectionContent]
-  )
+  );
 
-  const addNavigationSection = useCallback(
+  const addSection = useCallback(
     (navigationKey: string, value: NavigationSection) => {
       const updatedNavigationSectionContent = new Map(navigationSectionContent);
       const currentValue = updatedNavigationSectionContent.get(navigationKey);
@@ -164,7 +215,7 @@ const NavigationSectionContentProvider = ({
     [navigationSectionContent, updateNavigationSectionContent]
   );
 
-  const removeNavigationSection = useCallback(
+  const removeSection = useCallback(
     (navigationKey: string, sectionIdx: number) => {
       const updatedNavigationSectionContent = new Map(navigationSectionContent);
       const currentValue = updatedNavigationSectionContent.get(navigationKey);
@@ -177,18 +228,20 @@ const NavigationSectionContentProvider = ({
     [navigationSectionContent, updateNavigationSectionContent]
   );
 
-  const updateNavigationTitle = useCallback(
-    (navigationKey: string, value: string) => {
+  const updateIsSectionRequired = useCallback(
+    (navigationKey: string, sectionIndex: number) => {
       const updatedNavigationSectionContent = new Map(navigationSectionContent);
       const currentValue = updatedNavigationSectionContent.get(navigationKey);
       if (currentValue) {
-        currentValue.navigationName = value;
+        currentValue.navigationSection[sectionIndex].isRequired =
+          !currentValue.navigationSection[sectionIndex].isRequired;
         updatedNavigationSectionContent.set(navigationKey, currentValue);
         updateNavigationSectionContent(updatedNavigationSectionContent);
       }
     },
     [navigationSectionContent, updateNavigationSectionContent]
-  )
+  );
+
   const updateSectionName = useCallback(
     (navigationKey: string, sectionIdx: number, value: string) => {
       const updatedNavigationSectionContent = new Map(navigationSectionContent);
@@ -265,6 +318,22 @@ const NavigationSectionContentProvider = ({
     [navigationSectionContent, updateNavigationSectionContent]
   );
 
+  const updateSectionFieldIsRequired = useCallback(
+    (navigationKey: string, sectionIdx: number, fieldIdx: number) => {
+      const updatedNavigationSectionContent = new Map(navigationSectionContent);
+      const currentValue = updatedNavigationSectionContent.get(navigationKey);
+      if (currentValue) {
+        currentValue.navigationSection[sectionIdx].sectionFields[
+          fieldIdx
+        ].isRequired = !currentValue.navigationSection[sectionIdx].sectionFields[
+          fieldIdx
+        ].isRequired;
+        updatedNavigationSectionContent.set(navigationKey, currentValue);
+        updateNavigationSectionContent(updatedNavigationSectionContent);
+      }
+    },
+    [navigationSectionContent, updateNavigationSectionContent]
+  )
   const updateFieldLabel = useCallback(
     (
       navigationKey: string,
@@ -272,7 +341,6 @@ const NavigationSectionContentProvider = ({
       fieldIdx: number,
       value: string
     ) => {
-      console.log(navigationKey, sectionIdx, fieldIdx, value, "label");
       const updatedNavigationSectionContent = new Map(navigationSectionContent);
       const currentValue = updatedNavigationSectionContent.get(navigationKey);
       if (currentValue) {
@@ -415,46 +483,54 @@ const NavigationSectionContentProvider = ({
     () => ({
       navigationSectionContent,
       updateNavigationSectionContent,
-      addNavigationSectionContent,
-      removeNavigationSection,
-      addNavigationSection,
-      updateActiveNavigationTab,
-      updateNavigationTitle,
+      addNavigationTab,
+      updateNavigationTabName,
+      updateNavigationTabIsActive,
+      removeNavigationTab,
+      addSection,
+      removeSection,
+      updateSectionIsMulti,
+      updateIsSectionRequired,
+      updateShowSectionName,
       updateSectionName,
       addSectionField,
+      updateSelectionType,
       removeSectionField,
       updateSectionField,
       setCollapseSection,
+      updateSectionFieldIsRequired,
       updateFieldLabel,
       updateFieldDropdownSelection,
       updateFieldDropdownOptions,
       updateFieldStartDate,
       updateFieldEndDate,
       updateFieldOnGoing,
-      updateSelectionType,
-      updateSectionIsMulti,
     }),
     [
       navigationSectionContent,
       updateNavigationSectionContent,
-      addNavigationSectionContent,
-      removeNavigationSection,
-      addNavigationSection,
-      updateNavigationTitle,
-      updateActiveNavigationTab,
+      addNavigationTab,
+      updateNavigationTabName,
+      updateNavigationTabIsActive,
+      removeNavigationTab,
+      addSection,
+      removeSection,
+      updateSectionIsMulti,
+      updateIsSectionRequired,
+      updateShowSectionName,
       updateSectionName,
       addSectionField,
+      updateSelectionType,
       removeSectionField,
       updateSectionField,
       setCollapseSection,
+      updateSectionFieldIsRequired,
       updateFieldLabel,
       updateFieldDropdownSelection,
       updateFieldDropdownOptions,
       updateFieldStartDate,
       updateFieldEndDate,
       updateFieldOnGoing,
-      updateSelectionType,
-      updateSectionIsMulti,
     ]
   );
 
