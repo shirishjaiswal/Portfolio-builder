@@ -6,7 +6,7 @@ import {
   NavigationSectionContent,
   NavigationSectionContentMap,
   SectionField,
-} from "@/components/admin-control/page-navigation/type";
+} from "@/components/app/admin-control/page-navigation/type";
 import {
   createContext,
   useCallback,

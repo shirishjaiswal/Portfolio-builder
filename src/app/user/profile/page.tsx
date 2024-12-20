@@ -1,9 +1,9 @@
 "use server";
 
-import ProfileServer from "@/components/user/profile/profile-server";
+import ProfileInfoServer from "@/components/app/user/profile-page/profile-page-server";
 
 const Page: React.FC = () => {
-  return <ProfileServer />;
+  return <ProfileInfoServer />;
 };
 
 export default Page;

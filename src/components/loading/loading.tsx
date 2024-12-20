@@ -32,7 +32,7 @@ const Loading: React.FC<LoadingProps> = ({
           color={spinColor ?? "default"}
           labelColor={labelColor ?? "primary"}
           label={label ?? "Loading"}
-          size={spinSize ?? "lg"}
+          size={spinSize ?? "xl"}
           className="mx-auto w-24 h-24"
         />
       </div>

@@ -5,6 +5,7 @@ import { SideBarItems } from "./type";
 import SideBarItem from "./sidebar-button";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { useUserRoleContextProvider } from "@/context/user-role-context";
 
 const sidebarItemSet: SideBarItems[] = [
   {
@@ -48,7 +49,7 @@ const Sidebar = () => {
     })
   }, [])
   return (
-    <div className="w-20p h-screen bg-gray-50 py-2 fixed left-0">
+    <div className="w-20p bg-gray-50 py-2 fixed left-0">
       {sideBarItems.map((item) => (
         <SideBarItem key={item.label} {...item} />
       ))}

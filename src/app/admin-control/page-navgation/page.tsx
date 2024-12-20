@@ -1,4 +1,4 @@
-import PageNavigationContentClient from "@/components/admin-control/page-navigation/page-navigation.client";
+import PageNavigationContentClient from "@/components/app/admin-control/page-navigation/page-navigation.client";
 
 export default function Page() {
   return (

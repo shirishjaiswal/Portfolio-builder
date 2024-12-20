@@ -3,7 +3,7 @@
 import {
   UserProfile,
   UserSectionField,
-} from "@/components/user/profile/types";
+} from "@/components/app/user/profile-page/types";
 import _ from "lodash";
 import {
   createContext,

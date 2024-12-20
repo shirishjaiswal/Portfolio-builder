@@ -1,15 +1,17 @@
-import Image from "next/image";
-import user from "../../../public/icons/user.svg";
+"use client"
 import Logo from "@/icons/logo";
+import ProfileHover from "./profilehover";
+import { useRouter } from "next/navigation";
 
 function Navigation() {
+  const router = useRouter();
   return (
-    <div className="flex bg-white w-full h-16 justify-between items-center px-2 pr-4 drop-shadow-xl sticky top-0 z-50">
-      <div>
+    <div className="flex bg-white w-full min-h-8p justify-between items-center px-2 pr-4 drop-shadow-xl sticky top-0 z-50">
+      <button onClick={() => {router.push("/")}}>
         <Logo fill="#2D67BF" width={200} />
-      </div>
+      </button>
       <div>
-        <Image src={user} alt="user-profile" height={50} width={50} />
+          <ProfileHover />
       </div>
     </div>
   );

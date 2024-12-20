@@ -1,6 +1,6 @@
 "use client";
 
-import { NavigationSectionContentMap } from "@/components/admin-control/page-navigation/type";
+import { NavigationSectionContentMap } from "@/components/app/admin-control/page-navigation/type";
 import {
   createContext,
   useCallback,

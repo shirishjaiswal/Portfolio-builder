@@ -1,12 +1,12 @@
 import {
   NavigationSectionContent,
   NavigationSectionContentMap,
-} from "@/components/admin-control/page-navigation/type";
+} from "@/components/app/admin-control/page-navigation/type";
 import {
   SerializeUserProfile,
   UserProfile,
   UserProfileSectionData,
-} from "@/components/user/profile/types";
+} from "@/components/app/user/profile-page/types";
 
 const navigationSectionContentMap = (
   data: string
