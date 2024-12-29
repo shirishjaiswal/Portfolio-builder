@@ -13,7 +13,7 @@ interface Config {
 export type Connection = {
   method: string;
   endpoint: string;
-  payload?: object;
+  payload?: any;
 };
 
 type Headers = {

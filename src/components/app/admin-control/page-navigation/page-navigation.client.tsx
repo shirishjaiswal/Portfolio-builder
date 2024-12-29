@@ -2,7 +2,7 @@
 
 import PageTitle from "@/components/app/admin-control/page-title/page-title";
 import Loading from "@/components/loading/loading";
-import { useLoadingContextProvider } from "@/context/loading-context";
+import { useLoadingContext } from "@/context/loading-context";
 import { useEffect, useRef } from "react";
 import NavigationSections from "./navigation-section";
 import { useNavigationSectionContentProvider } from "@/context/navigation-section-content-context";
@@ -11,7 +11,7 @@ import Button from "@/components/global-components/Button/button";
 import localstorage from "@/utils/storage/local-storage";
 
 const PageNavigationContentClient = () => {
-  const { isLoading, updateIsLoading } = useLoadingContextProvider();
+  const { isLoading, updateIsLoading } = useLoadingContext();
   const { navigationSectionContent, updateNavigationSectionContent } =
     useNavigationSectionContentProvider();
 

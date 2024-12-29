@@ -2,7 +2,7 @@
 import { useSideBarContextProvider } from "@/context/side-bar-contest-context";
 import { SideBarItems } from "./type";
 import { useRouter } from "next/navigation";
-import { useLoadingContextProvider } from "@/context/loading-context";
+import { useLoadingContext } from "@/context/loading-context";
 
 type Props = SideBarItems;
 const SideBarItem: React.FC<Props> = ({
@@ -14,7 +14,7 @@ const SideBarItem: React.FC<Props> = ({
 }: Props) => {
   const { sideBarItems, updateSideBarItems } = useSideBarContextProvider();
   const router = useRouter();
-  const { updateIsLoading } = useLoadingContextProvider();
+  const { updateIsLoading } = useLoadingContext();
 
   const handleClick = () => {
     if (!isDisabled && !isActive) {

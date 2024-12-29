@@ -5,26 +5,7 @@ interface OptionType {
   value: string;
 }
 
-export const reactSelectStyles: StylesConfig<OptionType, false> = {
-  control: (provided, state) => ({
-    ...provided,
-    width: "100%",
-    padding: "0px 8px",
-    marginTop: "6px",
-    fontSize: "0.875rem", // text-sm
-    backgroundColor: state.isDisabled ? "#F3F4F6" : "#FFFFFF", // bg-gray-100 when disabled
-    border: state.isFocused
-      ? "1px solid #3B82F6" // focus:border-blue-500
-      : "1px solid #D1D5DB", // border-gray-300
-    borderRadius: "6px", // rounded-md
-    boxShadow: state.isFocused
-      ? "0 0 0 2px rgba(59, 130, 246, 0.5)" // focus:ring-blue-300
-      : "none",
-    transition: "all 0.2s ease-in-out",
-    "&:hover": {
-      boxShadow: state.isFocused ? "none" : "0 0 0 1px rgba(0, 0, 0, 0.1)", // hover:shadow-sm
-    },
-  }),
+export const reactSelectStyles: StylesConfig<OptionType, boolean> = {
   menu: (provided) => ({
     ...provided,
     backgroundColor: "#FFFFFF",
@@ -41,8 +22,8 @@ export const reactSelectStyles: StylesConfig<OptionType, false> = {
       ? "#bfdbfe" // focus:bg-gray-100
       : "transparent",
     color: state.isSelected ? "#FFFFFF" : "#111827", // selected: text-white
-    fontSize: "0.875rem", // text-sm
-    padding: "10px 12px",
+    fontSize: "0.75rem", // text-xs
+    padding: "6px 10px", // Adjusted padding for uniformity
     cursor: "pointer",
     transition: "background-color 0.2s ease-in-out",
   }),
@@ -55,6 +36,7 @@ export const reactSelectStyles: StylesConfig<OptionType, false> = {
     ...provided,
     color: "#111827", // text-gray-900
     fontWeight: 400, // text-thin
+    fontSize: "0.75rem", // text-xs
   }),
   dropdownIndicator: (provided) => ({
     ...provided,
@@ -63,26 +45,89 @@ export const reactSelectStyles: StylesConfig<OptionType, false> = {
       color: "#374151", // hover:text-gray-700
     },
   }),
-  indicatorSeparator: () => ({
-    display: "none", // Removes the separator
-  }),
-  valueContainer: (provided) => ({
-    ...provided,
-    padding: "0px", // Align with InputTextField padding
-  }),
-};
-
-export const styleForTags: StylesConfig<OptionType, true> = {
   control: (provided) => ({
     ...provided,
     width: "100%",
-    padding: "4px 8px",
-    minHeight: "40px",
+    padding: "0 6px", // Adjust horizontal padding for a neat appearance
+    height: "30px", // Set control height to 30px
     backgroundColor: "#F9FAFB", // bg-gray-100
     border: "1px solid #D1D5DB", // border-gray-300
     borderRadius: "6px",
     boxShadow: "none",
     cursor: "text",
+    display: "flex", // Flexbox to align items
+    alignItems: "center", // Vertically center content
+    justifyContent: "flex-start", // Align items to the left
+    fontSize: "0.75rem", // Proportional text size (12px)
+    lineHeight: "1.2", // Adjust line height for centering
+    "&:hover": {
+      borderColor: "#3B82F6", // hover:border-blue-500
+    },
+  }),
+  multiValue: (provided) => ({
+    ...provided,
+    backgroundColor: "#E0F2FE", // bg-blue-100
+    borderRadius: "9999px", // Fully rounded for pill-shaped tags
+    padding: "2px 8px", // Reduced padding for smaller tag size
+    display: "flex",
+    alignItems: "center",
+    fontSize: "0.75rem", // text-xs (12px)
+  }),
+  multiValueLabel: (provided) => ({
+    ...provided,
+    color: "#0F172A", // text-gray-900
+    fontSize: "0.75rem", // text-xs (12px)
+    fontWeight: 500,
+  }),
+  multiValueRemove: (provided) => ({
+    ...provided,
+    color: "#3B82F6", // text-blue-500
+    cursor: "pointer",
+    marginLeft: "4px", // Smaller margin to fit reduced size
+    borderRadius: "50%", // Make the button round
+    width: "16px", // Set width for circular shape
+    height: "16px", // Set height for circular shape
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    "&:hover": {
+      color: "#EF4444", // hover:text-red-500
+      backgroundColor: "#FEE2E2", // hover:bg-red-100
+    },
+  }),
+  indicatorSeparator: () => ({
+    display: "none", // Removes the separator
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "4px", // Smaller gap to match reduced control size
+    padding: "0", // Remove extra padding for perfect centering
+    alignItems: "center", // Ensure tags are vertically centered
+  }),
+  indicatorsContainer: () => ({
+    display: "none", // Hide all indicators for tags
+  }),
+};
+
+
+export const styleForTags: StylesConfig<OptionType, boolean> = {
+  control: (provided) => ({
+    ...provided,
+    width: "100%",
+    padding: "0 6px", // Adjust horizontal padding for a neat appearance
+    height: "30px", // Set control height to 30px
+    backgroundColor: "#F9FAFB", // bg-gray-100
+    border: "1px solid #D1D5DB", // border-gray-300
+    borderRadius: "6px",
+    boxShadow: "none",
+    cursor: "text",
+    display: "flex", // Flexbox to align items
+    alignItems: "center", // Vertically center content
+    justifyContent: "flex-start", // Align items to the left
+    fontSize: "0.875rem", // Proportional text size (14px)
+    lineHeight: "1.2", // Adjust line height for centering
     "&:hover": {
       borderColor: "#3B82F6", // hover:border-blue-500
     },
@@ -91,31 +136,33 @@ export const styleForTags: StylesConfig<OptionType, true> = {
     ...provided,
     display: "flex",
     flexWrap: "wrap",
-    gap: "8px",
-    padding: "4px 8px",
+    gap: "4px", // Smaller gap to match reduced control size
+    padding: "0", // Remove extra padding for perfect centering
+    alignItems: "center", // Ensure tags are vertically centered
   }),
   multiValue: (provided) => ({
     ...provided,
     backgroundColor: "#E0F2FE", // bg-blue-100
     borderRadius: "9999px", // Fully rounded for pill-shaped tags
-    padding: "4px 12px",
+    padding: "2px 8px", // Reduce padding to match control size
     display: "flex",
     alignItems: "center",
+    fontSize: "0.75rem", // text-xs (12px)
   }),
   multiValueLabel: (provided) => ({
     ...provided,
     color: "#0F172A", // text-gray-900
-    fontSize: "0.875rem", // text-sm
+    fontSize: "0.75rem", // text-xs (12px)
     fontWeight: 500,
   }),
   multiValueRemove: (provided) => ({
     ...provided,
     color: "#3B82F6", // text-blue-500
     cursor: "pointer",
-    marginLeft: "8px",
+    marginLeft: "4px", // Smaller margin to fit reduced size
     borderRadius: "50%", // Make the button round
-    width: "20px", // Set width for circular shape
-    height: "20px", // Set height for circular shape
+    width: "16px", // Set width for circular shape
+    height: "16px", // Set height for circular shape
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

@@ -279,7 +279,6 @@ const UserProfileContextProvider = ({
         ].dropdownSelection === "multi";
 
       if (isMulti && value && typeof value === "object") {
-        console.log("Multi");
         updatedUserProfile
           .get(userProfileKey)!
           .userProfileSectionsData.get(
@@ -288,7 +287,6 @@ const UserProfileContextProvider = ({
           sectionFieldIdx
         ].inputValue = [...value];
       } else if (!isMulti && value && typeof value === "string") {
-        console.log("Single");
         updatedUserProfile
           .get(userProfileKey)!
           .userProfileSectionsData.get(
@@ -297,7 +295,6 @@ const UserProfileContextProvider = ({
           sectionFieldIdx
         ].inputValue = [value];
       } else if (!isMulti && !value) {
-        console.log("Single");
         updatedUserProfile
           .get(userProfileKey)!
           .userProfileSectionsData.get(

@@ -119,6 +119,7 @@ interface NavigationSectionContentProviderProps {
 const NavigationSectionContentProvider = ({
   children,
 }: NavigationSectionContentProviderProps) => {
+
   const [navigationSectionContent, setNavigationSectionContent] =
     useState<NavigationSectionContentMap>(
       new Map() as NavigationSectionContentMap
@@ -293,7 +294,6 @@ const NavigationSectionContentProvider = ({
       const updatedNavigationSectionContent = new Map(navigationSectionContent);
       const currentValue = updatedNavigationSectionContent.get(navigationKey);
       if (currentValue) {
-        console.log(currentValue);
         currentValue.navigationSection[sectionIdx].sectionFields.push(value);
         updatedNavigationSectionContent.set(navigationKey, currentValue);
         updateNavigationSectionContent(updatedNavigationSectionContent);
@@ -344,7 +344,6 @@ const NavigationSectionContentProvider = ({
       const updatedNavigationSectionContent = new Map(navigationSectionContent);
       const currentValue = updatedNavigationSectionContent.get(navigationKey);
       if (currentValue) {
-        console.log(navigationKey, sectionIdx, fieldIdx, value);
         currentValue.navigationSection[sectionIdx].sectionFields[
           fieldIdx
         ].label = value;

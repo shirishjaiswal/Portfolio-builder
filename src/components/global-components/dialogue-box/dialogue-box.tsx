@@ -1,18 +1,9 @@
 import React from "react";
-import InputTextField from "../input-field/input-text-field";
+import InputTextField, { InputTextFieldProps } from "../input-field/input-text-field";
 import { Checkbox } from "@nextui-org/checkbox";
 
-interface InputField {
-  id: string;
-  label: string;
-  type?: "text" | "email" | "password" | "dialogueBox";
-  placeholder?: string;
-  options?: string[];
-  value?: string;
+interface InputField extends InputTextFieldProps {
   checkboxValue?: boolean;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  warning?: string;
-  isInvalid?: boolean;
 }
 
 interface Button {
@@ -53,7 +44,7 @@ const DialogBox: React.FC<DialogBoxProps> = ({
 
   return (
     <dialog
-      className={`fixed inset-0 flex items-center justify-center z-50 min-w-40p ${className}`}
+      className={`fixed inset-0 flex items-center justify-center z-40 min-w-40p ${className}`}
       aria-modal="true"
     >
       {/* Backdrop */}
@@ -90,7 +81,7 @@ const DialogBox: React.FC<DialogBoxProps> = ({
         {/* Body */}
 
         {inputFields.map((field) =>
-          field.type === "dialogueBox" ? (
+          field.type === "checkbox" ? (
             <div className="mb-6" key={field.id}>
               <Checkbox
                 className="text-sm"
@@ -110,8 +101,8 @@ const DialogBox: React.FC<DialogBoxProps> = ({
                 placeholder={field.placeholder ?? ""}
                 value={field.value}
                 onChange={field.onChange}
-                isInvalid={field.isInvalid}
-                errorMessage={field.warning}
+                required={field.required}
+                errorMessage={field.errorMessage}
               />
             </div>
           )

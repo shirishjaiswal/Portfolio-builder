@@ -29,10 +29,10 @@ const FieldInputParamaters: React.FC<FieldInputParamatersProps> = ({
       hasUnsavedChanges: true,
     });
     updateUnsavedChanges(
+      true,
       groupUniqueKey,
       parentUniqueKey,
-      currentField.uniqueKey,
-      true
+      currentField.configKey,
     );
   };
 
@@ -43,10 +43,10 @@ const FieldInputParamaters: React.FC<FieldInputParamatersProps> = ({
       hasUnsavedChanges: true,
     });
     updateUnsavedChanges(
+      true,
       groupUniqueKey,
       parentUniqueKey,
-      currentField.uniqueKey,
-      true
+      currentField.configKey,
     );
   };
 
@@ -57,10 +57,10 @@ const FieldInputParamaters: React.FC<FieldInputParamatersProps> = ({
       hasUnsavedChanges: true,
     });
     updateUnsavedChanges(
+      true,
       groupUniqueKey,
       parentUniqueKey,
-      currentField.uniqueKey,
-      true
+      currentField.configKey,
     );
   };
 
@@ -71,10 +71,10 @@ const FieldInputParamaters: React.FC<FieldInputParamatersProps> = ({
       hasUnsavedChanges: true,
     });
     updateUnsavedChanges(
+      true,
       groupUniqueKey,
       parentUniqueKey,
-      currentField.uniqueKey,
-      true
+      currentField.configKey,
     );
   };
 
@@ -89,10 +89,10 @@ const FieldInputParamaters: React.FC<FieldInputParamatersProps> = ({
     });
   
     updateUnsavedChanges(
+      true,
       groupUniqueKey,
       parentUniqueKey,
-      currentField.uniqueKey,
-      true
+      currentField.configKey,
     );
   };
   return (

@@ -1,27 +1,52 @@
 import { useProfileConfigurationContextProvider } from "@/context/profile-configuration-context";
-import { ParentSection, UserInfoGroup_OP } from "./type";
+import {
+  ParentSection,
+  UserInfoField_OP,
+  UserInfoGroup_OP,
+  UserInfoParent_OP,
+} from "./type";
 import { useEffect, useState } from "react";
-import { getActiveTab } from "./helpet";
+import { getActiveTab, getUniqueParentKey } from "./helper";
 import { CirclePlus, Save } from "lucide-react";
-
-import ProfileConfigurationParentSection from "./profile-configuration-parent-section";
+import ProfileConfigurationParentSection from "@/components/app/user/profile-configuration/profile-configuration-parent-section";
 import DialogBox from "@/components/global-components/dialogue-box/dialogue-box";
-import postUserInfoGroup from "@/utils/api-connections/admin/post-user-info-group";
-
+import putUserInfoGroup from "@/utils/api-connections/admin/put-user-info-group";
+import { useLoadingContext } from "@/context/loading-context";
+import { toast } from "sonner";
+import postUserInfoParent from "@/utils/api-connections/admin/post-user-info-parent";
+import Loading from "@/components/loading/loading";
+const changeConfigKeyAndRemoveId = (userInfoFields: UserInfoField_OP[]) => {
+  return userInfoFields.map((userInfoField) => {
+    return {
+      ...userInfoField,
+      configKey: getUniqueParentKey(),
+      id: undefined,
+    };
+  });
+};
 const ProfileConfigurationGroupSection = () => {
+
   const { profileConfigurationData, addNewParentSection, unsavedChanges } =
     useProfileConfigurationContextProvider();
+
+  const { updateIsLoading } = useLoadingContext();
+
+  const [isSaving, setIsSaving] = useState(false);
 
   const [activeTab, setActiveTab] = useState<UserInfoGroup_OP | undefined>(
     undefined
   );
+
+  useEffect(() => {
+    setActiveTab(getActiveTab(profileConfigurationData) ?? undefined);
+  }, [profileConfigurationData]);
 
   const [isAddNewSectionDialogBoxOpen, setIsAddNewSectionDIalogueBoxOpen] =
     useState<boolean>(false);
 
   const [addNewSectionFields, setAddNewSectionFields] = useState<ParentSection>(
     {
-      uniqueKey: "",
+      configKey: "",
       label: "",
       description: "",
       multi: false,
@@ -31,52 +56,145 @@ const ProfileConfigurationGroupSection = () => {
   );
 
   const handleIsAddNewSectionDialogBoxOpen = () => {
+    if (isAddNewSectionDialogBoxOpen) {
+      setAddNewSectionFields({
+        configKey: "",
+        label: "",
+        description: "",
+        multi: false,
+        required: false,
+        labelVisible: false,
+      });
+    }
     setIsAddNewSectionDIalogueBoxOpen(!isAddNewSectionDialogBoxOpen);
   };
 
-  useEffect(() => {
-    setActiveTab(getActiveTab(profileConfigurationData) ?? undefined);
-  }, [profileConfigurationData]);
+  const handleAddNewParentSection = async (parent?: UserInfoParent_OP) => {
+    if (
+      (!parent && !addNewSectionFields.label) ||
+      !activeTab ||
+      !activeTab.id
+    ) {
+      toast.error("Missing required fields.");
+      return;
+    }
 
-  const handleAddNewSection = () => {
-    setIsAddNewSectionDIalogueBoxOpen(false);
-    addNewParentSection(activeTab!.uniqueKey, addNewSectionFields);
+    // Generate a unique key and set defaults
+    const uniqueKey = getUniqueParentKey(
+      parent?.label || addNewSectionFields.label
+    );
+
+    const parentLabel = addNewSectionFields.label || `${parent?.label} - COPY`;
+    const parentDescription =
+      addNewSectionFields.description ?? parent?.description;
+    const parentMulti = addNewSectionFields.multi ?? parent?.multi;
+    const parentRequired = addNewSectionFields.required ?? parent?.required;
+    const parentLabelVisible =
+      addNewSectionFields.labelVisible ?? parent?.labelVisible;
+
+    const parentUserInfoFields =
+      addNewSectionFields.label && parent?.userInfoFields
+        ? changeConfigKeyAndRemoveId(parent.userInfoFields)
+        : [];
+
+    const newUserInfoParent: UserInfoParent_OP = {
+      configKey: uniqueKey,
+      label: parentLabel,
+      description: parentDescription,
+      multi: parentMulti,
+      required: parentRequired,
+      labelVisible: parentLabelVisible,
+      userInfoFields: parentUserInfoFields,
+    };
+
+    try {
+      updateIsLoading(true);
+
+      const response = await postUserInfoParent(
+        newUserInfoParent,
+        activeTab.id
+      );
+      if (!response?.data) {
+        throw new Error(response?.error || "Failed to add the new section.");
+      }
+
+      addNewParentSection(activeTab.configKey, response.data);
+      toast.success("Parent section added successfully.");
+      handleIsAddNewSectionDialogBoxOpen();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong."
+      );
+    } finally {
+      setIsAddNewSectionDIalogueBoxOpen(false);
+      updateIsLoading(false);
+    }
   };
 
   const hasUnsavedChanges = () => {
     let hasUnsavedChanges = false;
-    unsavedChanges?.get(activeTab?.uniqueKey)?.forEach((parent) => {
-      parent.size > 0 && (hasUnsavedChanges = hasUnsavedChanges || true);
+    unsavedChanges?.get(activeTab!.configKey)?.forEach((parent) => {
+      parent.field.size > 0 && (hasUnsavedChanges = hasUnsavedChanges || true);
     });
     return hasUnsavedChanges;
   };
 
   const handleSaveGroupChanges = async () => {
+    setIsSaving(true);
     let response;
-    if(activeTab) response = await postUserInfoGroup(activeTab);
-    console.log("response", response);
-  }
+    try {
+      response = await putUserInfoGroup(activeTab!);
+      if (!response?.data) throw new Error(response?.error);
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  
+  console.log("profileConfigurationData", profileConfigurationData);
 
   return activeTab ? (
     <>
       <div className="flex justify-end w-full gap-2">
         <button
-          className={`flex items-center space-x-1 -right-0 p-2 border transation-all rounded-full shadow-sm drop-shadow-xl mb-3 transition duration-200 ease-in-out
+          className={`flex items-center justify-center space-x-1 -right-0 p-2 border transation-all rounded-full shadow-sm drop-shadow-xl transition duration-200 ease-in-out
     ${
       hasUnsavedChanges()
         ? "bg-gray-200 border-gray-200 cursor-not-allowed"
         : "bg-teal-500 border-slate00 hover:bg-teal-600"
     }
-  `}
+  h-12 min-w-40 mb-1`}
           onClick={handleSaveGroupChanges}
           id="save-changes-button"
-          disabled={hasUnsavedChanges()}
+          disabled={hasUnsavedChanges() || isSaving}
         >
-          <Save color="#FFFFFF" size={20} />
-          <p className="text-medium font-semibold text-white">Save Changes</p>
+          {!isSaving && (
+            <>
+              <Save color="#FFFFFF" size={20} />
+              <p className="text-medium font-semibold text-white">
+                Save Changes
+              </p>
+            </>
+          )}
+          {isSaving && (
+            <div className="flex items-center gap-5 justify-center">
+              <Loading
+                spinColor="success"
+                className="top-0.25"
+                spinSize="sm"
+                isBackdrop={false}
+              />
+              <p className="text-medium font-semibold text-white">Saving</p>
+            </div>
+          )}
         </button>
         <button
-          className="bg-teal-500 flex items-center space-x-1 -right-0 hover:rounded-full p-2 border hover:bg-teal-600 transation-all rounded-full shadow-sm border-slate00 drop-shadow-xl mb-3 transition duration-200 ease-in-out"
+          className="bg-teal-500 flex items-center space-x-1 -right-0 hover:rounded-full p-2 border hover:bg-teal-600 transation-all rounded-full shadow-sm border-slate00 drop-shadow-xl transition duration-200 ease-in-out 
+  h-12 min-w-40 mb-1"
           onClick={handleIsAddNewSectionDialogBoxOpen}
           id="add-new-field-button"
         >
@@ -86,12 +204,13 @@ const ProfileConfigurationGroupSection = () => {
           </p>
         </button>
       </div>
-      <div>
+      <div className="h-[726px] overflow-y-auto">
         {activeTab.userInfoParents.map((parent) => (
           <ProfileConfigurationParentSection
-            key={parent.uniqueKey}
+            key={parent.configKey}
             parent={parent}
-            groupUniqueKey={activeTab.uniqueKey}
+            group={activeTab}
+            handleAddNewParentSection={handleAddNewParentSection}
           />
         ))}
         {activeTab.userInfoParents.length === 0 && (
@@ -118,7 +237,7 @@ const ProfileConfigurationGroupSection = () => {
               {
                 label: "Add Section",
                 type: "blue",
-                onClick: handleAddNewSection,
+                onClick: handleAddNewParentSection,
               },
             ]}
             inputFields={[
@@ -151,7 +270,7 @@ const ProfileConfigurationGroupSection = () => {
               {
                 id: "add-new-section-is-required",
                 label: "Is Section Mandatory",
-                type: "dialogueBox",
+                type: "checkbox",
                 checkboxValue: addNewSectionFields.required,
                 onChange: () => {
                   setAddNewSectionFields({
@@ -163,7 +282,7 @@ const ProfileConfigurationGroupSection = () => {
               {
                 id: "add-new-section-is-multi",
                 label: "Allow Duplication",
-                type: "dialogueBox",
+                type: "checkbox",
                 checkboxValue: addNewSectionFields.multi,
                 onChange: () => {
                   setAddNewSectionFields({
@@ -175,7 +294,7 @@ const ProfileConfigurationGroupSection = () => {
               {
                 id: "add-new-section-is-section-label-visible",
                 label: "Show Section Label",
-                type: "dialogueBox",
+                type: "checkbox",
                 checkboxValue: addNewSectionFields.labelVisible,
                 onChange: () => {
                   setAddNewSectionFields({

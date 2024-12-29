@@ -12,7 +12,7 @@ const logout = async () => {
       connection: LOGOUT(),
     });
   } catch (error) {
-    toast.error("Logout error:", error);
+    toast.error("Logout error:");
   }
   return fetchResponse;
 };

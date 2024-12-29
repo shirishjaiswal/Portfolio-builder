@@ -5,23 +5,22 @@ import POST_USER_INFO_GROUP from "@/endpoints/spring-boot/admin/post-user-info-g
 
 export async function POST(request: Request) {
   try {
-    const payload : UserInfoField_OP = await request.json();
-    
+    const payload: UserInfoField_OP = await request.json();
     const response = await fetchData({
       connection: POST_USER_INFO_GROUP(payload),
     });
 
     if (!response?.data) {
       return NextResponse.json(
-        { error: response?.error || "Authentication failed" },
+        { error: response?.error || "Request failed" },
         { status: 500 }
       );
     }
-    const res = NextResponse.json({ data: response.data }, { status: 200 });
 
-    return res;
+    return NextResponse.json({ data: response.data }, { status: 200 });
   } catch (error) {
-    console.log(error);
+    console.error("Error in PUT /api:", error);
+
     return NextResponse.json(
       { error: "An internal server error occurred" },
       { status: 500 }

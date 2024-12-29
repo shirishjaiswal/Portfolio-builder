@@ -1,16 +1,15 @@
 "use client";
 
-import FileUpload from "./pdfUploader";
+import FileUpload from "@/components/app/user/home/pdfUploader";
+import GenerativeAI from "./ai";
 
 const Home = () => {
   return (
-    <main className='flex min-h-screen flex-col items-center justify-between p-24'>
-      <div className='w-96'>
-        <FileUpload />
-      </div>
+    <main className="flex flex-col">
+      <FileUpload />
+      <GenerativeAI />
     </main>
-   
-  )
-}
+  );
+};
 
 export default Home;

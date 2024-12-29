@@ -12,7 +12,7 @@ import {
   Settings,
 } from "lucide-react";
 import { useUserRoleContextProvider } from "@/context/user-role-context";
-import { useLoadingContextProvider } from "@/context/loading-context";
+import { useLoadingContext } from "@/context/loading-context";
 import Loading from "@/components/loading/loading";
 import logout from "@/utils/api-connections/auth/logout";
 import { useRouter } from "next/navigation";
@@ -22,7 +22,7 @@ const SidebarComponent = ({ pathName }: { pathName: string | null }) => {
   const { userRole } = useUserRoleContextProvider();
   const [collapsed, setCollapsed] = useState(true);
   const [activeMenuItem, setActiveMenuItem] = useState<string | null>(null);
-  const { isLoading, updateIsLoading } = useLoadingContextProvider();
+  const { isLoading, updateIsLoading } = useLoadingContext();
 
   useEffect(() => {
     if (pathName) {
@@ -173,7 +173,7 @@ const SidebarComponent = ({ pathName }: { pathName: string | null }) => {
         <Loading
           spinColor="primary"
           spinSize="lg"
-          label="Logging"
+          label="Loading..."
           labelColor="primary"
         />
       )}

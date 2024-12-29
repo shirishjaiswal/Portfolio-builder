@@ -16,7 +16,6 @@ const navigationSectionContentMap = (
   const d: { key: string; value: NavigationSectionContent }[] =
     JSON.parse(data);
   if (!d) return deserialized;
-  console.log(typeof d);
   d.forEach((section: { key: string; value: NavigationSectionContent }) => {
     deserialized.set(section.key, section.value);
   });

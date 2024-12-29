@@ -4,15 +4,16 @@ import { ParentSection, UserInfoParent_OP } from "./type";
 
 type ProfileConfigurationParentEditSectionProps = {
   parent: UserInfoParent_OP;
-  editParentSectionData: ParentSection | null;
+  editParentSectionData: ParentSection
   setEditParentSectionData: (
-    editParentSectionData: ParentSection | null
+    parent: ParentSection,
   ) => void;
 };
 
 const ProfileConfigurationParentEditSection: React.FC<
   ProfileConfigurationParentEditSectionProps
-> = ({ parent, editParentSectionData, setEditParentSectionData }) => {
+> = ({ parent,  editParentSectionData, setEditParentSectionData }) => {
+
   return (
     <div
       className={`flex items-end gap-4 ${
@@ -33,7 +34,7 @@ const ProfileConfigurationParentEditSection: React.FC<
         }
       />
       <InputTextField
-        additionalContainerStyles="w-2/6"
+        containerClassName="w-2/6"
         type="text"
         label="Section Description"
         placeholder="Enter Section Description"
@@ -53,7 +54,7 @@ const ProfileConfigurationParentEditSection: React.FC<
         onChange={() =>
           setEditParentSectionData({
             ...editParentSectionData!,
-            multi: editParentSectionData?.multi ? false : true,
+            multi: parent?.multi ? false : true,
           })
         }
       >
@@ -66,7 +67,7 @@ const ProfileConfigurationParentEditSection: React.FC<
         onChange={() =>
           setEditParentSectionData({
             ...editParentSectionData!,
-            required: editParentSectionData?.required ? false : true,
+            required: parent?.required ? false : true,
           })
         }
       >
@@ -79,7 +80,7 @@ const ProfileConfigurationParentEditSection: React.FC<
         onChange={() =>
           setEditParentSectionData({
             ...editParentSectionData!,
-            labelVisible: editParentSectionData?.labelVisible ? false : true,
+            labelVisible: parent?.labelVisible ? false : true,
           })
         }
       >

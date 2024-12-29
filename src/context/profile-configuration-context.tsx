@@ -3,13 +3,13 @@
 import {
   getActiveTab,
   getUniqueFieldKey,
-  getUniqueGroupKey,
   getUniqueParentKey,
-} from "@/components/app/user/profile-configuration/helpet";
+} from "@/components/app/user/profile-configuration/helper";
 import {
   ParentSection,
   ProfileConfigurationSection,
   UserInfoField_OP,
+  UserInfoGroup_OP,
   UserInfoParent_OP,
 } from "@/components/app/user/profile-configuration/type";
 import { ReactSelectOption } from "@/utils/types/react-select";
@@ -23,12 +23,18 @@ import {
 } from "react";
 
 interface ProfileConfigurtionContextType {
-  unsavedChanges: Map<string, Map<string, Map<string, boolean>>>;
+  unsavedChanges: Map<
+    string,
+    Map<
+      string,
+      { parentHasUnsavedChanges: boolean; field: Map<string, boolean> }
+    >
+  >;
   updateUnsavedChanges: (
+    hasUnsavedChanges: boolean,
     groupUniqueKey: string,
     parentUniqueKey: string,
-    fieldUniqueKey: string,
-    hasUnsavedChanges: boolean
+    fieldUniqueKey?: string
   ) => void;
 
   fieldInputOptions: ReactSelectOption[];
@@ -43,7 +49,7 @@ interface ProfileConfigurtionContextType {
 
   removeProfileConfigurationTab: (key: string) => void;
 
-  addNewProfileConfigurationTab: (label: string, description: string) => void;
+  addNewProfileConfigurationTab: (userInfoGroup: UserInfoGroup_OP) => void;
 
   updateProfileConfigurationTabLable: (key: string, lable: string) => void;
 
@@ -61,7 +67,11 @@ interface ProfileConfigurtionContextType {
 
   deleteField: (groupkey: string, parentKey: string, fieldKey: string) => void;
 
-  addNewTextField: (groupkey: string, parentKey: string) => void;
+  addNewTextField: (
+    groupkey: string,
+    parentKey: string,
+    userInfoField: UserInfoField_OP
+  ) => void;
 
   updateFieldSection: (
     groupkey: string,
@@ -71,7 +81,7 @@ interface ProfileConfigurtionContextType {
 
   addNewParentSection: (
     groupkey: string,
-    addNewSectionFields: ParentSection
+    userInfoParent: UserInfoParent_OP
   ) => void;
 
   duplicateParentSection: (groupkey: string, parentKey: string) => void;
@@ -102,51 +112,26 @@ const ProfileConfigurationContextProvider = ({
     useState<ProfileConfigurationSection>(new Map());
 
   const [unsavedChanges, setUnsavedChanges] = useState<
-    Map<string, Map<string, Map<string, boolean>>>
+    Map<
+      string,
+      {
+        hasUnsavedChanges: boolean;
+        parent: Map<
+          string,
+          { hasUnsavedChanges: boolean; field: Map<string, boolean> }
+        >;
+      }
+    >
   >(new Map());
 
   const updateUnsavedChanges = useCallback(
     (
+      hasUnsavedChanges: boolean,
       groupUniqueKey: string,
-      parentUniqueKey: string,
-      fieldUniqueKey: string,
-      hasUnsavedChanges: boolean
+      parentUniqueKey?: string,
+      fieldUniqueKey?: string
     ) => {
-      setUnsavedChanges((prev) => {
-        const newUnsavedChanges = new Map(prev);
-
-        // Retrieve or initialize parent and field unsaved changes maps
-        const parentUnsavedChanges =
-          newUnsavedChanges.get(groupUniqueKey) ?? new Map();
-        const fieldUnsavedChanges =
-          parentUnsavedChanges.get(parentUniqueKey) ?? new Map();
-
-        if (hasUnsavedChanges) {
-          // Add or update the field
-          fieldUnsavedChanges.set(fieldUniqueKey, true);
-          parentUnsavedChanges.set(parentUniqueKey, fieldUnsavedChanges);
-          newUnsavedChanges.set(groupUniqueKey, parentUnsavedChanges);
-        } else {
-          // Remove the field if it exists
-          fieldUnsavedChanges.delete(fieldUniqueKey);
-
-          // If the parent map is now empty, clean it up
-          if (fieldUnsavedChanges.size === 0) {
-            parentUnsavedChanges.delete(parentUniqueKey);
-          } else {
-            parentUnsavedChanges.set(parentUniqueKey, fieldUnsavedChanges);
-          }
-
-          // If the group map is now empty, clean it up
-          if (parentUnsavedChanges.size === 0) {
-            newUnsavedChanges.delete(groupUniqueKey);
-          } else {
-            newUnsavedChanges.set(groupUniqueKey, parentUnsavedChanges);
-          }
-        }
-
-        return newUnsavedChanges;
-      });
+      
     },
     [setUnsavedChanges]
   );
@@ -177,7 +162,7 @@ const ProfileConfigurationContextProvider = ({
         updateProfileConfigurationData(newProfileConfigurationData);
       }
       if (
-        getActiveTab(profileConfigurationData)?.uniqueKey === groupUniqueKey
+        getActiveTab(profileConfigurationData)?.configKey === groupUniqueKey
       ) {
         setUnsavedChanges(() => {
           const newUnsavedChanges = new Map();
@@ -198,18 +183,24 @@ const ProfileConfigurationContextProvider = ({
   );
 
   const addNewProfileConfigurationTab = useCallback(
-    (label: string, description: string) => {
-      const uniqueKey = getUniqueGroupKey(label);
+    (userInfoGroup: UserInfoGroup_OP) => {
       const newProfileConfigurationData = new Map(profileConfigurationData);
-      newProfileConfigurationData.set(uniqueKey, {
-        uniqueKey: uniqueKey,
-        description: description,
-        position: profileConfigurationData.size,
-        label: label,
-        visible: false,
-        userInfoParents: [],
-        isActive: false,
+
+      newProfileConfigurationData.forEach((group) => {
+        group.isActive = false;
       });
+
+      newProfileConfigurationData.set(userInfoGroup.configKey, {
+        id: userInfoGroup.id,
+        configKey: userInfoGroup.configKey,
+        description: userInfoGroup.description,
+        position: userInfoGroup.position,
+        label: userInfoGroup.label,
+        visible: userInfoGroup.visible,
+        userInfoParents: userInfoGroup.userInfoParents,
+        isActive: true,
+      });
+
       updateProfileConfigurationData(newProfileConfigurationData);
     },
     [profileConfigurationData, updateProfileConfigurationData]
@@ -231,7 +222,7 @@ const ProfileConfigurationContextProvider = ({
       newProfileConfigurationData
         .get(groupkey)
         ?.userInfoParents.forEach((userInfoParent) => {
-          if (userInfoParent.uniqueKey === parentKey) {
+          if (userInfoParent.configKey === parentKey) {
             userInfoParent.inEditMode = userInfoParent.inEditMode
               ? false
               : true;
@@ -252,7 +243,7 @@ const ProfileConfigurationContextProvider = ({
       newProfileConfigurationData
         .get(groupkey)
         ?.userInfoParents.forEach((userInfoParent) => {
-          if (userInfoParent.uniqueKey === sectionKey)
+          if (userInfoParent.configKey === sectionKey)
             userInfoParent.isCollapsed = !userInfoParent.isCollapsed;
         });
       updateProfileConfigurationData(newProfileConfigurationData);
@@ -266,7 +257,7 @@ const ProfileConfigurationContextProvider = ({
       newProfileConfigurationData
         .get(groupkey)
         ?.userInfoParents.forEach((userInfoParent) => {
-          if (userInfoParent.uniqueKey === sectionKey && dataToUpdate) {
+          if (userInfoParent.configKey === sectionKey && dataToUpdate) {
             if (dataToUpdate.label !== "")
               userInfoParent.label = dataToUpdate.label;
             userInfoParent.description = dataToUpdate.description;
@@ -290,7 +281,7 @@ const ProfileConfigurationContextProvider = ({
 
       if (group) {
         const updatedParents = group.userInfoParents.filter(
-          (parent) => parent.uniqueKey !== parentKey
+          (parent) => parent.configKey !== parentKey
         );
 
         group.userInfoParents = updatedParents;
@@ -310,11 +301,11 @@ const ProfileConfigurationContextProvider = ({
 
       if (group) {
         const updatedParents = group.userInfoParents.map((parent) => {
-          if (parent.uniqueKey === parentKey) {
+          if (parent.configKey === parentKey) {
             return {
               ...parent,
               userInfoFields: parent.userInfoFields.filter(
-                (field) => field.uniqueKey !== fieldKey
+                (field) => field.configKey !== fieldKey
               ),
             };
           }
@@ -330,31 +321,21 @@ const ProfileConfigurationContextProvider = ({
   );
 
   const addNewTextField = useCallback(
-    (groupKey: string, parentKey: string) => {
+    (groupKey: string, parentKey: string, userInfoField: UserInfoField_OP) => {
       const newProfileConfigurationData = new Map(profileConfigurationData);
       const group = newProfileConfigurationData.get(groupKey);
 
       if (group) {
         const updatedParents: UserInfoParent_OP[] = group.userInfoParents.map(
           (parent) => {
-            if (parent.uniqueKey === parentKey) {
+            if (parent.configKey === parentKey) {
               return {
                 ...parent,
                 isCollapsed: false,
                 userInfoFields: [
                   ...parent.userInfoFields,
                   {
-                    uniqueKey: getUniqueFieldKey(),
-                    label: "Text Field",
-                    description: "",
-                    position: parent.userInfoFields.length,
-                    input: "TEXT",
-                    required: false,
-                    multiSelection: false,
-                    startDate: false,
-                    endDate: false,
-                    onGoing: false,
-                    options: [],
+                    ...userInfoField,
                   },
                 ],
               };
@@ -379,11 +360,11 @@ const ProfileConfigurationContextProvider = ({
       if (!group) return;
 
       const updatedParents = group.userInfoParents.map((parent) => {
-        if (parent.uniqueKey === parentKey) {
+        if (parent.configKey === parentKey) {
           return {
             ...parent,
             userInfoFields: parent.userInfoFields.map((f) =>
-              f.uniqueKey === field.uniqueKey ? field : f
+              f.configKey === field.configKey ? field : f
             ),
           };
         }
@@ -402,19 +383,13 @@ const ProfileConfigurationContextProvider = ({
   );
 
   const addNewParentSection = useCallback(
-    (groupKey: string, addNewSectionFields: ParentSection) => {
+    (groupKey: string, userInfoParent: UserInfoParent_OP) => {
       const newProfileConfigurationData = new Map(profileConfigurationData);
       const group = newProfileConfigurationData.get(groupKey);
 
       if (group) {
         group.userInfoParents.push({
-          uniqueKey: getUniqueParentKey(),
-          label: addNewSectionFields.label,
-          description: addNewSectionFields.description,
-          required: addNewSectionFields.required,
-          multi: addNewSectionFields.multi,
-          labelVisible: addNewSectionFields.labelVisible,
-          userInfoFields: [],
+          ...userInfoParent,
         });
 
         newProfileConfigurationData.set(groupKey, group);
@@ -431,7 +406,7 @@ const ProfileConfigurationContextProvider = ({
 
       if (group) {
         const parentToDuplicate = group.userInfoParents.find(
-          (parent) => parent.uniqueKey === parentKey
+          (parent) => parent.configKey === parentKey
         );
 
         if (parentToDuplicate) {
@@ -463,12 +438,12 @@ const ProfileConfigurationContextProvider = ({
 
       if (group) {
         const parentToUpdate = group.userInfoParents.find(
-          (parent) => parent.uniqueKey === parentKey
+          (parent) => parent.configKey === parentKey
         );
 
         if (parentToUpdate) {
           const fieldToDuplicate = parentToUpdate.userInfoFields.find(
-            (field) => field.uniqueKey === fieldKey
+            (field) => field.configKey === fieldKey
           );
 
           if (fieldToDuplicate) {

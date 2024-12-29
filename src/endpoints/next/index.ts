@@ -4,13 +4,14 @@ interface Config {
   method: string;
   url: string;
   headers: Headers;
-  body?: string;
+  body?: any;
 }
 
 export type Connection = {
   method: string;
   endpoint: string;
-  payload?: object;
+  payload?: any;
+  stringifyBody?: boolean;
 };
 
 type Headers = {
@@ -34,39 +35,64 @@ const fetchData = async ({
   let result: Response;
 
   try {
-    const DOMAIN = "";
-
+    const DOMAIN = ""; // Specify your domain or API base URL here
     const ENDPOINT = `${DOMAIN}/${connection.endpoint.replace(/^\//, "")}`;
 
+    // Default headers, allowing for overrides
     const finalHeaders: Headers = {
       "Content-Type": "application/json",
       ...headers,
     };
 
+    // Add the Authorization header if a token is provided
     if (token) {
       finalHeaders["Authorization"] = `Bearer ${token}`;
     }
+
+    // Prepare the request config
     const config: Config = {
       method: connection.method,
       url: ENDPOINT,
       headers: finalHeaders,
-      ...(connection.payload && { body: JSON.stringify(connection.payload) }),
     };
-    console.log("config", config);
 
+    // Handle file upload (FormData)
+    if (connection.payload instanceof FormData) {
+      // If the payload is FormData, we don't set Content-Type manually
+      delete config.headers["Content-Type"];
+      config.body = connection.payload;
+    } else if (connection.payload) {
+      // If the payload is JSON, stringify it
+      config.body = JSON.stringify(connection.payload);
+    } else if (connection.payload) {
+      // If there's a payload and we don't stringify it, pass it directly
+      config.body = connection.payload;
+    }
+
+    console.log("Request config:", config);
+
+    // Send the request
     const response = await fetch(config.url, {
       method: config.method,
       headers: config.headers,
       body: config.body,
     });
 
-    const data = await response.json();
+    // Handle JSON responses
+    const contentType = response.headers.get("Content-Type");
 
-    console.log("data", data);
-    result = { data: data?.data ?? null, error: data?.error ?? null };
+    if (contentType && contentType.includes("application/json")) {
+      const data = await response.json();
+
+      result = { data: data?.data ?? null, error: data?.error ?? null };
+    } else {
+      // Handle non-JSON responses 
+      const text = await response.text();
+      result = { data: text, error: null };
+    }
   } catch (error) {
-    console.log("error", error);
-    result = { data: null, error: error ?? "Something went wrong" };
+    console.error("Request failed:", error);
+    result = { data: null, error: error instanceof Error ? error.message : "Something went wrong" };
   }
 
   return result;

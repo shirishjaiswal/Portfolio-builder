@@ -7,12 +7,12 @@ import { useEffect, useState } from "react";
 import { useEdgeStore } from "@/lib/edgestore";
 import Button from "@/components/global-components/Button/button";
 import Loading from "@/components/loading/loading";
-import { useLoadingContextProvider } from "@/context/loading-context";
+import { useLoadingContext } from "@/context/loading-context";
 
 const HeaderStyleClient = () => {
   const [file, setFile] = useState<File>();
   const { edgestore } = useEdgeStore();
-  const { isLoading, updateIsLoading } = useLoadingContextProvider();
+  const { isLoading, updateIsLoading } = useLoadingContext();
   useEffect(() => {
     updateIsLoading(false);
   });

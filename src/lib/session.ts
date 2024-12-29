@@ -88,3 +88,13 @@ export async function getRole(
     return "";
   }
 }
+
+export async function getUserId(accessToken: string | undefined): Promise<number> {
+  try {
+    if (!accessToken) return -1;
+    const decryptedAccessToken = jwtDecode(accessToken);
+    return decryptedAccessToken?.id;
+  } catch (error) {
+    return -1;
+  }
+}

@@ -1,9 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getRole, validateToken } from "./lib/session";
-import refreshCookies from "./utils/api-connections/auth/refresh-token";
+import refreshCookies from "./utils/api-connections/user/refresh-token";
 
 export async function middleware(req: NextRequest) {
-  const publicRoutes = ["/", "/login", "/register", "/verify", "/auth/refresh-token"];
+  const publicRoutes = ["/", "/login", "/register", "/verify"];
   const currentPath = req.nextUrl.pathname;
 
   // Skip middleware for static files and Next.js internal routes
@@ -26,39 +26,30 @@ export async function middleware(req: NextRequest) {
     const isAccessTokenValid = await validateToken(accessToken);
     const isRefreshTokenValid = await validateToken(refreshToken);
 
-    console.log("isAccessTokenValid", isAccessTokenValid);
-    console.log("isRefreshTokenValid", isRefreshTokenValid);
-
     // Handle token expiration
     if (!isAccessTokenValid) {
       if (isRefreshTokenValid && refreshToken) {
-        console.log("Refreshing access token...");
 
-        // Attempt to refresh the access token
-        const refreshedResponse = await refreshCookies(refreshToken);
+        const refreshedResponse = await refreshCookies();
 
-        if (refreshedResponse?.accessToken) {
-          console.log("Access token refreshed successfully");
-
+        if (refreshedResponse?.data.accessToken) {
           const response = NextResponse.next();
-          response.cookies.set("pb_session_token", refreshedResponse.accessToken, {
+          response.cookies.set("pb_session_token", refreshedResponse?.data.accessToken, {
             httpOnly: true,
             secure: true,
             path: "/",
           });
-          response.cookies.set("pb_refresh_token", refreshedResponse.refreshToken, {
+          response.cookies.set("pb_refresh_token", refreshedResponse?.data.refreshToken, {
             httpOnly: true,
             secure: true,
             path: "/",
           })
           return response;
         } else {
-          console.log("Failed to refresh access token");
           return NextResponse.redirect(new URL("/login", req.url));
         }
       }
 
-      console.log("Access and refresh tokens are invalid");
       return NextResponse.redirect(new URL("/login", req.url));
     }
 
@@ -73,13 +64,11 @@ export async function middleware(req: NextRequest) {
     const allowedRoles = roleProtectedRoutes[currentPath];
 
     if (allowedRoles && !allowedRoles.includes(role)) {
-      console.log(`Unauthorized role: ${role} for route ${currentPath}`);
       return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
 
     return NextResponse.next(); // Allow access if all checks pass
   } catch (error) {
-    console.error("Middleware error:", error);
     return NextResponse.redirect(new URL("/login", req.url));
   }
 }

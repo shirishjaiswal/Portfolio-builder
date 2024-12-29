@@ -7,6 +7,7 @@ type FieldActionButtonsProps = {
   parentUniqueKey: string;
   field: UserInfoField_OP;
   setCurrentField: (currentField: UserInfoField_OP) => void;
+  deleteField: (fieldKey: string) => void;
 };
 
 const FieldActionButtons: React.FC<FieldActionButtonsProps> = ({
@@ -14,8 +15,9 @@ const FieldActionButtons: React.FC<FieldActionButtonsProps> = ({
   parentUniqueKey,
   field,
   setCurrentField,
+  deleteField,
 }: FieldActionButtonsProps) => {
-  const { updateFieldSection, updateUnsavedChanges, deleteField, duplicateFieldSection } =
+  const { updateFieldSection, updateUnsavedChanges, duplicateFieldSection } =
     useProfileConfigurationContextProvider();
 
   const handleStoreChanges = () => {
@@ -25,21 +27,21 @@ const FieldActionButtons: React.FC<FieldActionButtonsProps> = ({
     };
     setCurrentField(tempField);
     updateUnsavedChanges(
+      false,
       groupUniqueKey,
       parentUniqueKey,
-      field.uniqueKey,
-      false
-    );
+      field.configKey
+    ); 
     updateFieldSection(groupUniqueKey, parentUniqueKey, tempField);
   };
 
   const handleDeleteField = () => {
-    deleteField(groupUniqueKey, parentUniqueKey, field.uniqueKey);
+    deleteField(field.configKey);
   };
 
   const handleDuplicateField = () => {
-    duplicateFieldSection(groupUniqueKey, parentUniqueKey, field.uniqueKey);
-  }
+    duplicateFieldSection(groupUniqueKey, parentUniqueKey, field.configKey);
+  };
   return (
     <>
       {field.hasUnsavedChanges ? (
@@ -52,13 +54,16 @@ const FieldActionButtons: React.FC<FieldActionButtonsProps> = ({
         </button>
       ) : (
         <>
-          <button
-            className="transition-transform duration-300 hover:scale-150 hover:rounded-full"
-            onClick={handleDuplicateField}
-            id="copy-button"
-          >
-            <Copy size={18} color="#3730a3" />
-          </button>
+          {false && (
+            <button
+              className="transition-transform duration-300 hover:scale-150 hover:rounded-full"
+              onClick={handleDuplicateField}
+              id="copy-button"
+              disabled={true}
+            >
+              <Copy size={18} color="#3730a3" />
+            </button>
+          )}
           <button
             className="transition-transform duration-300 hover:scale-150 hover:rounded-full"
             onClick={handleDeleteField}

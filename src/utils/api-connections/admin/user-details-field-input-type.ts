@@ -13,7 +13,6 @@ const userDetailsFieldInputType = async () => {
   } catch (error) {
     console.log(error);
   }
-  console.log(fetchResponse);
   return fetchResponse;
 };
 

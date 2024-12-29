@@ -1,7 +1,6 @@
 import { useProfileConfigurationContextProvider } from "@/context/profile-configuration-context";
 import { UserInfoField_OP } from "./type";
 import Select from "react-select";
-
 import InputTextField from "@/components/global-components/input-field/input-text-field";
 import { ReactSelectOption } from "@/utils/types/react-select";
 import { reactSelectStyles } from "@/utils/styles/react-select";
@@ -14,6 +13,7 @@ type ProfileConfigurationFieldSectionProps = {
   groupUniqueKey: string;
   parentUniqueKey: string;
   field: UserInfoField_OP;
+  deleteField: (fieldKey: string) => void;
 };
 
 const similarFieldParamaters: string[] = [
@@ -33,6 +33,7 @@ const ProfileConfigurationFieldSection: React.FC<
   groupUniqueKey,
   parentUniqueKey,
   field,
+  deleteField,
 }: ProfileConfigurationFieldSectionProps) => {
   const { fieldInputOptions, updateUnsavedChanges } =
     useProfileConfigurationContextProvider();
@@ -50,10 +51,10 @@ const ProfileConfigurationFieldSection: React.FC<
       hasUnsavedChanges: true,
     });
     updateUnsavedChanges(
+      true,
       groupUniqueKey,
       parentUniqueKey,
-      field.uniqueKey,
-      true
+      field.configKey
     );
   };
 
@@ -64,10 +65,10 @@ const ProfileConfigurationFieldSection: React.FC<
       hasUnsavedChanges: true,
     });
     updateUnsavedChanges(
+      true,
       groupUniqueKey,
       parentUniqueKey,
-      field.uniqueKey,
-      true
+      field.configKey
     );
   };
 
@@ -78,10 +79,10 @@ const ProfileConfigurationFieldSection: React.FC<
       hasUnsavedChanges: true,
     });
     updateUnsavedChanges(
+      true,
       groupUniqueKey,
       parentUniqueKey,
-      field.uniqueKey,
-      true
+      field.configKey
     );
   };
 
@@ -98,10 +99,10 @@ const ProfileConfigurationFieldSection: React.FC<
       hasUnsavedChanges: true,
     });
     updateUnsavedChanges(
+      true,
       groupUniqueKey,
       parentUniqueKey,
-      field.uniqueKey,
-      true
+      field.configKey
     );
   };
 
@@ -109,7 +110,7 @@ const ProfileConfigurationFieldSection: React.FC<
     <div
       className={`flex flex-col gap-2 group ${
         currentField.hasUnsavedChanges
-          ? "bg-slate-300 border border-blue-800"
+          ? "bg-slate-300 border border-sky-800"
           : "bg-white"
       } relative bg-slate-50 p-4 rounded-md group mb-4 drop-shadow-md`}
     >
@@ -121,6 +122,7 @@ const ProfileConfigurationFieldSection: React.FC<
           parentUniqueKey={parentUniqueKey}
           field={currentField}
           setCurrentField={setCurrentField}
+          deleteField={deleteField}
         />
       </div>
       <div className="flex gap-4 items-center">
@@ -131,7 +133,7 @@ const ProfileConfigurationFieldSection: React.FC<
             {"Input Type"}
           </label>
           <Select
-            className="w-full"
+            className="w-full min-w-[200px]"
             key="selection-type"
             options={fieldInputOptions}
             value={fieldInputOptions.find(
@@ -147,20 +149,26 @@ const ProfileConfigurationFieldSection: React.FC<
           />
         </div>
         <InputTextField
-          additionalContainerStyles="w-2/6"
+          containerClassName="w-2/6"
           type="text"
           label="Label"
           placeholder="Enter Label"
           value={currentField.label}
           onChange={(e) => handleUpdateCurrentFieldLabel(e.target.value)}
+          onError={(e) => {
+            console.log(e);
+          }}
+          max={36}
+          required
         />
         <InputTextField
-          additionalContainerStyles="w-2/6"
+          containerClassName="w-2/6"
           type="text"
           label="Description"
           placeholder="Enter description"
           value={currentField.description}
           onChange={(e) => handleUpdateCurrentFieldDescription(e.target.value)}
+          max={50}
         />
         <Checkbox
           className="text-sm w-2/6"

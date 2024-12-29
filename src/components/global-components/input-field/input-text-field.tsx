@@ -1,79 +1,135 @@
-import { EyeOff } from "lucide-react";
+import { debounce } from "lodash";
+import { EyeOff, Eye } from "lucide-react";
+import { useState, useEffect } from "react";
 
-type InputTextFieldProps = {
-  type: "text" | "email" | "password";
+export type InputTextFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label: string;
-  required?: boolean;
-  placeholder: string;
-  defaultValue?: string;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  additionalInputStyles?: string;
-  additionalLabelStyles?: string;
-  additionalContainerStyles?: string;
-  isDisabled?: boolean;
-  isInvalid?: boolean;
+  description?: string;
+  containerClassName?: string;
+  inputClassName?: string;
+  labelClassName?: string;
   errorMessage?: string;
 };
 
 const InputTextField: React.FC<InputTextFieldProps> = ({
-  type,
+  type = "text" as "text" | "email" | "password" | "textarea" | "url",
   label,
-  required,
-  placeholder,
+  required = false,
+  placeholder = "",
+  description,
   value,
   onChange,
-  additionalInputStyles,
-  additionalLabelStyles,
-  additionalContainerStyles,
-  isDisabled,
-  isInvalid,
+  onBlur,
+  containerClassName = "",
+  inputClassName = "",
+  labelClassName = "",
+  disabled = false,
   errorMessage,
+  ...rest
 }) => {
+  const [inputValue, setInputValue] = useState(value || "");
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
+
+  useEffect(() => {
+    setInputValue(value || "");
+  }, [value]);
+
+  const debouncedOnChange = debounce(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = e.target.value;
+
+      onChange?.({
+        ...e,
+        target: {
+          ...e.target,
+          value: inputValue,
+          minLength: inputValue.length,
+          validationMessage: getError(inputValue) ?? "",
+          validity: {
+            ...e.target.validity,
+            valueMissing: !inputValue,
+            customError: getError(inputValue) !== undefined,
+          },
+        },
+      });
+    },
+    300
+  );
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.persist();
+    e.bubbles = false && setInputValue(e.target.value);
+    debouncedOnChange(e);
+  };
+
+  const handleOnBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.persist();
+    e.bubbles = false && setInputValue(e.target.value);
+    onBlur?.(e);
+  };
+
+  const getError = (value: string) => {
+    if (required && value.trim() === "") {
+      return "(Field cannot be empty)";
+    } else if (rest.min && value.length < +rest.min) {
+      return `(min ${rest.min} characters)`;
+    } else if (rest.max && value.length > +rest.max) {
+      return `(max ${rest.max} characters)`;
+    }
+  };
+
   return (
-    <div className={`flex flex-col gap-2 ${additionalContainerStyles}`}>
-      <label
-        className={`text-gray-700 text-sm font-medium transition-all ${
-          isInvalid ? "text-red-500" : "text-gray-700"
-        } ${additionalLabelStyles}`}
-      >
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
+    <div className={`flex flex-col gap-2 ${containerClassName}`}>
+      <div>
+        {label && (
+          <label
+            className={`text-sm font-medium 
+               text-zinc-900
+             ${labelClassName}`}
+          >
+            {label} {required && <span className="text-red-500">* </span>}
+            {
+              <span className="text-sm text-red-700">
+                {errorMessage || getError(inputValue.toLocaleString())}
+              </span>
+            }
+          </label>
+        )}
+
+        <p id="input-description" className="font-light text-xs h-2 text-gray-400">
+          {description}
+        </p>
+      </div>
+
       <div className="relative">
         <input
-          className={`w-full px-4 py-2 border rounded-md text-sm transition-all duration-300 focus:outline-none focus:ring-2 font-thin	
-        ${
-          isInvalid
-            ? "border-red-500 focus:ring-red-300"
-            : "border-gray-300 focus:border-blue-500 focus:ring-blue-300"
-        } 
-        ${isDisabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"}
-        hover:shadow-sm ${additionalInputStyles}`}
-          type={type}
+          className={`w-full px-4 py-2 border rounded-md text-sm transition-all duration-300 focus:outline-none focus:ring-2 
+          ${disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"} 
+          hover:shadow-sm ${inputClassName}`}
+          type={type === "password" && isPasswordVisible ? "text" : type}
           placeholder={placeholder}
-          value={value}
-          onChange={(e) => onChange?.(e)}
-          disabled={isDisabled}
-          defaultValue={value}
+          defaultValue={inputValue}
+          onChange={handleChange}
+          disabled={disabled}
+          onBlur={handleOnBlur}
+          {...rest}
         />
+
         {type === "password" && (
           <button
-            className="absolute right-2 top-1/2 transform -translate-y-1/2"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
             type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              const input = e.currentTarget
-                .previousElementSibling as HTMLInputElement;
-              input.type = input.type === "password" ? "text" : "password";
-            }}
+            onClick={() => setPasswordVisible(!isPasswordVisible)}
+            aria-label={isPasswordVisible ? "Hide password" : "Show password"}
           >
-            {type === "password" && (
-              <EyeOff className="h-5 w-5 text-gray-400" />
+            {isPasswordVisible ? (
+              <Eye className="h-5 w-5" />
+            ) : (
+              <EyeOff className="h-5 w-5" />
             )}
           </button>
         )}
       </div>
-      {isInvalid && <p className="text-sm text-red-500 mt-1">{errorMessage}</p>}
     </div>
   );
 };

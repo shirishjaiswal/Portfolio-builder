@@ -1,17 +1,17 @@
 "use client";
 
-import { useLoadingContextProvider } from "@/context/loading-context";
+import { useLoadingContext } from "@/context/loading-context";
 import getUserInfoGroup from "@/utils/api-connections/admin/get-user-info-group";
 import userDetailsFieldInputType from "@/utils/api-connections/admin/user-details-field-input-type";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import ProfileConfiguration from "./profile-configuration";
+import ProfileConfiguration from "@/components/app/user/profile-configuration/profile-configuration";
 import { getReactSelectOptions } from "@/utils/helper/user-info-group";
 import { useProfileConfigurationContextProvider } from "@/context/profile-configuration-context";
-import { getProfileConfigurationSection } from "./helpet";
+import { getProfileConfigurationSection } from "@/components/app/user/profile-configuration/helper";
 
 const ProfileConfigurationMain = () => {
-  const { updateIsLoading } = useLoadingContextProvider();
+  const { updateIsLoading } = useLoadingContext();
   const { updateFieldInputOptions, updateProfileConfigurationData } =
     useProfileConfigurationContextProvider();
 
@@ -36,7 +36,7 @@ const ProfileConfigurationMain = () => {
     };
 
     fetchData();
-  }, [updateProfileConfigurationData, updateFieldInputOptions, updateIsLoading]);
+  }, []);
 
   return <ProfileConfiguration />;
 };

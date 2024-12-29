@@ -40,7 +40,7 @@ const LoadingContextProvider = ({ children }: LoadingContextProps) => {
   );
 };
 
-const useLoadingContextProvider = () => {
+const useLoadingContext = () => {
   const context = useContext(LoadingContext);
   if (!context) {
     throw new Error("useLoading must be used within a LoadingProvider");
@@ -48,4 +48,4 @@ const useLoadingContextProvider = () => {
   return context;
 };
 
-export { LoadingContextProvider, useLoadingContextProvider };
+export { LoadingContextProvider, useLoadingContext };

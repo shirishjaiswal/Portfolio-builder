@@ -5,13 +5,13 @@ import { Input } from "@nextui-org/input";
 import PageTitle from "@/components/app/admin-control/page-title/page-title";
 import Button from "@/components/global-components/Button/button";
 import Loading from "@/components/loading/loading";
-import { useLoadingContextProvider } from "@/context/loading-context";
+import { useLoadingContext } from "@/context/loading-context";
 import CreatableSelect from "react-select/creatable";
 import { styleForTags } from "../page-navigation/styles";
 
 const ProfilePageClient: React.FC = () => {
 
-  const { isLoading, updateIsLoading } = useLoadingContextProvider();
+  const { isLoading, updateIsLoading } = useLoadingContext();
 
   useEffect(() => {
     updateIsLoading(false);

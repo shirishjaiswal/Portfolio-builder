@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import verifyMail from "@/utils/api-connections/auth/verify-mail";
 import { toast } from "sonner";
-import { useLoadingContextProvider } from "@/context/loading-context";
+import { useLoadingContext } from "@/context/loading-context";
 import Loading from "@/components/loading/loading";
 
 const VerifyMail = () => {
@@ -13,7 +13,7 @@ const VerifyMail = () => {
   const token = params.get("token") ?? "";
 
   const router = useRouter();
-  const { isLoading, updateIsLoading } = useLoadingContextProvider();
+  const { isLoading, updateIsLoading } = useLoadingContext();
 
   // Prevent duplicate execution in Strict Mode
   const executedRef = useRef(false);

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLoadingContextProvider } from "@/context/loading-context";
+import { useLoadingContext } from "@/context/loading-context";
 import UserDetailsValidation from "@/utils/validation/user-details-validation";
 import register from "@/utils/api-connections/auth/register";
 import RegisterForm from "@/components/app/register/register-form";
@@ -25,7 +25,7 @@ const RegisterFormComponent = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isDataFormatValid, setDataFormatValid] = useState(formDataValid);
-  const { isLoading, updateIsLoading } = useLoadingContextProvider();
+  const { isLoading, updateIsLoading } = useLoadingContext();
 
   const handleSubmit = async (e: React.FormEvent) => {
     try {

@@ -2,7 +2,7 @@ import { Spinner } from "@nextui-org/spinner";
 import Backdrop from "./backdrop";
 
 type LoadingProps = {
-  spinColor:
+  spinColor?:
     | "default"
     | "primary"
     | "secondary"
@@ -10,33 +10,48 @@ type LoadingProps = {
     | "warning"
     | "danger";
   spinSize: "sm" | "md" | "lg";
-  label: string;
-  labelColor:
+  label?: string;
+  labelColor?:
     | "foreground"
     | "primary"
     | "secondary"
     | "success"
     | "warning"
     | "danger";
+  className?: string;
+  isBackdrop?: boolean;
 };
 const Loading: React.FC<LoadingProps> = ({
   spinColor,
   spinSize,
   label,
   labelColor,
+  isBackdrop = true,
+  className,
 }: LoadingProps) => {
   return (
-    <Backdrop>
-      <div className="flex gap-4">
+    <>
+      {isBackdrop && (
+        <Backdrop>
+          <Spinner
+            color={spinColor ?? "default"}
+            labelColor={labelColor ?? "primary"}
+            label={label ?? ""}
+            size={spinSize ?? "xl"}
+            className={`mx-auto ${className ?? ""}`}
+          />
+        </Backdrop>
+      )}
+      {!isBackdrop && (
         <Spinner
           color={spinColor ?? "default"}
           labelColor={labelColor ?? "primary"}
-          label={label ?? "Loading"}
+          label={label ?? ""}
           size={spinSize ?? "xl"}
-          className="mx-auto w-24 h-24"
+          className={`mx-auto ${className ?? ""}`}
         />
-      </div>
-    </Backdrop>
+      )}
+    </>
   );
 };
 

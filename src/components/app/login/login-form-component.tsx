@@ -5,7 +5,7 @@ import login from "@/utils/api-connections/auth/login";
 import { Response } from "@/endpoints/spring-boot/index";
 import LoginForm from "@/components/app/login/login-form";
 import UserDetailsValidation from "@/utils/validation/user-details-validation";
-import { useLoadingContextProvider } from "@/context/loading-context";
+import { useLoadingContext } from "@/context/loading-context";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -36,7 +36,7 @@ const LoginFormComponent = () => {
   const [mailVerificationFormValid, setMailVerificationFormValid] = useState(
     mailVerificationFormValidate
   );
-  const { isLoading, updateIsLoading } = useLoadingContextProvider();
+  const { isLoading, updateIsLoading } = useLoadingContext();
   const { updateUserRole } = useUserRoleContextProvider();
 
   const handleLoginSubmit = async (e: React.FormEvent) => {

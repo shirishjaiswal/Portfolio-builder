@@ -6,7 +6,6 @@ import POST_USER_INFO_GROUP from "@/endpoints/next/admin/post-user-info-group";
 
 const postUserInfoGroup = async (payload : UserInfoGroup_OP) => {
   let fetchResponse;
-
   try {
     fetchResponse = await fetchData({
       connection: POST_USER_INFO_GROUP(payload),

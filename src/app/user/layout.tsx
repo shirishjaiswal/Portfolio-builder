@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import PageTitle from "@/components/app/admin-control/page-title/page-title";
 import { ProfileConfigurationContextProvider } from "@/context/profile-configuration-context";
+import { UniqueKeyContextProvider } from "@/context/uniquekey-context";
+import { UserProfileContextsProvider } from "@/context/user-profile-contexts";
 
 export default function RootLayout({
   children,
@@ -35,20 +37,24 @@ export default function RootLayout({
     }
   }, [path]);
   return (
-    <ProfileConfigurationContextProvider>
-      <UserNavigationContenContextProvider>
-        <UserProfileContextProvider>
-          <div className="flex h-92p gap-4">
-            <div className="h-full">
-              <SidebarComponent pathName={pathname} />
-            </div>
-            <div className="w-94p pt-2 mr-4">
-              <PageTitle title={title ?? ""} />
-              {children}
-            </div>
-          </div>
-        </UserProfileContextProvider>
-      </UserNavigationContenContextProvider>
-    </ProfileConfigurationContextProvider>
+    <UserProfileContextsProvider>
+      <UniqueKeyContextProvider>
+        <ProfileConfigurationContextProvider>
+          <UserNavigationContenContextProvider>
+            <UserProfileContextProvider>
+              <div className="flex h-92p gap-4">
+                <div className="h-full">
+                  <SidebarComponent pathName={pathname} />
+                </div>
+                <div className="w-94p pt-2 mr-4">
+                  <PageTitle title={title ?? ""} />
+                  {children}
+                </div>
+              </div>
+            </UserProfileContextProvider>
+          </UserNavigationContenContextProvider>
+        </ProfileConfigurationContextProvider>
+      </UniqueKeyContextProvider>
+    </UserProfileContextsProvider>
   );
 }
