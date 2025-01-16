@@ -23,17 +23,17 @@ export async function POST(req: NextRequest) {
     await fs.writeFile(tempFilePath, fileBuffer);
 
     // Parse the pdf using pdf2json
-    const pdfParser = new (PDFParser as any)(null, 1);
+    const pdfParser = new PDFParser(null, true);
 
     // Return a Promise to handle asynchronous parsing
     parsedText = await new Promise<string>((resolve, reject) => {
-      pdfParser.on("pdfParser_dataError", (errData: any) => {
+      pdfParser.on("pdfParser_dataError", (errData) => {
         console.log(errData.parserError);
         reject("Error parsing PDF");
       });
 
       pdfParser.on("pdfParser_dataReady", () => {
-        resolve((pdfParser as any).getRawTextContent());
+        resolve(pdfParser.getRawTextContent());
       });
 
       pdfParser.loadPDF(tempFilePath);

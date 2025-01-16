@@ -1,5 +1,5 @@
 import { styleForTags } from "@/utils/styles/react-select";
-import { UserInfoField_OP } from "./type";
+import { UserInfoField_OP } from "@/components/app/user/profile-configuration/type";
 import { Checkbox } from "@nextui-org/checkbox";
 import CreatableSelect from "react-select/creatable";
 import { getReactSelectOptions } from "@/utils/helper/user-info-group";
@@ -32,52 +32,9 @@ const FieldInputParamaters: React.FC<FieldInputParamatersProps> = ({
       true,
       groupUniqueKey,
       parentUniqueKey,
-      currentField.configKey,
+      currentField.configKey
     );
   };
-
-  const handleUpdateStartDate = () => {
-    setCurrentField({
-      ...currentField,
-      startDate: !currentField.startDate,
-      hasUnsavedChanges: true,
-    });
-    updateUnsavedChanges(
-      true,
-      groupUniqueKey,
-      parentUniqueKey,
-      currentField.configKey,
-    );
-  };
-
-  const handleUpdateEndDate = () => {
-    setCurrentField({
-      ...currentField,
-      endDate: !currentField.endDate,
-      hasUnsavedChanges: true,
-    });
-    updateUnsavedChanges(
-      true,
-      groupUniqueKey,
-      parentUniqueKey,
-      currentField.configKey,
-    );
-  };
-
-  const handleUpdateOnGoing = () => {
-    setCurrentField({
-      ...currentField,
-      onGoing: !currentField.onGoing,
-      hasUnsavedChanges: true,
-    });
-    updateUnsavedChanges(
-      true,
-      groupUniqueKey,
-      parentUniqueKey,
-      currentField.configKey,
-    );
-  };
-
 
   const handleUpdateOptions = (
     selectedOptions: MultiValue<{ value: string; label: string }>
@@ -87,44 +44,16 @@ const FieldInputParamaters: React.FC<FieldInputParamatersProps> = ({
       options: selectedOptions.map((option) => option.value),
       hasUnsavedChanges: true,
     });
-  
+
     updateUnsavedChanges(
       true,
       groupUniqueKey,
       parentUniqueKey,
-      currentField.configKey,
+      currentField.configKey
     );
   };
   return (
     <>
-      {currentField.input === "DURATION" && (
-        <>
-          <Checkbox
-            className="text-sm"
-            isSelected={currentField?.startDate}
-            color="success"
-            onChange={handleUpdateStartDate}
-          >
-            Start Date
-          </Checkbox>
-          <Checkbox
-            className="text-sm"
-            isSelected={currentField?.endDate}
-            color="success"
-            onChange={handleUpdateEndDate}
-          >
-            End Date
-          </Checkbox>
-          <Checkbox
-            className="text-sm"
-            isSelected={currentField?.onGoing}
-            color="success"
-            onChange={handleUpdateOnGoing}
-          >
-            On Going
-          </Checkbox>
-        </>
-      )}
       {(currentField.input === "DROPDOWN" ||
         currentField.input === "CHECKBOX") && (
         <div className="flex w-full justify-items-start gap-3">

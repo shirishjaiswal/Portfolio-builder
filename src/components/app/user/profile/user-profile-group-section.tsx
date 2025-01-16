@@ -1,24 +1,16 @@
 import { Save } from "lucide-react";
-import { useEffect, useState } from "react";
-import UserProfileParentSection from "./user-profile-parent-section";
+import { useState } from "react";
+import UserProfileParentSection from "@/components/app/user/profile/user-profile-parent-section";
 import { useUserProfileContexts } from "@/context/user-profile-contexts";
-import { UserProfileDetilsGroup } from "./types";
-import { getActiveTab } from "./helper";
-import postUserProfileData from "@/utils/api-connections/user/post-user-profile-data";
+import postUserProfileData from "@/utils/api-connections/user-details/post-user-profile-data";
 import { toast } from "sonner";
 import Loading from "@/components/loading/loading";
 
-const UserProfileGroupSection = () => {
+const UserProfileGroupSection: React.FC = () => {
+
   const [isSaving, setIsSaving] = useState(false);
 
-  const { userProfileData } = useUserProfileContexts();
-
-  const [currentTab, setCurrentTab] = useState<UserProfileDetilsGroup>();
-
-  console.log(currentTab);
-  useEffect(() => {
-    setCurrentTab(getActiveTab(userProfileData) ?? undefined);
-  }, [userProfileData, setCurrentTab]);
+  const { userProfileData, activeTab } = useUserProfileContexts();
 
   const handleSaveGroupChanges = async () => {
     setIsSaving(true);
@@ -36,6 +28,7 @@ const UserProfileGroupSection = () => {
       setIsSaving(false);
     }
   };
+
   return (
     <>
       <div className="flex justify-end w-full gap-2">
@@ -74,15 +67,12 @@ const UserProfileGroupSection = () => {
       </div>
       <>
         <div className="h-[726px] overflow-y-auto">
-          {currentTab?.userInfoParents.map((parent) => (
-            <UserProfileParentSection
-              key={parent.configKey}
-              parent={parent}
-              group={currentTab}
-              setCurrentTab={setCurrentTab}
-            />
-          ))}
-          {currentTab?.userInfoParents.length === 0 && (
+          {activeTab?.userInfoParents.map((parent, index) => {
+            console.log(parent);
+            return (
+            <UserProfileParentSection key={parent.configKey} parent={parent} index={index}/>
+          )})}
+          {activeTab?.userInfoParents.length === 0 && (
             <div className="flex flex-col items-center justify-center gap-4 text-gray-700 p-6 bg-gray-100 rounded-lg border border-gray-300 shadow-md">
               <p className="text-lg font-semibold">No Sections Available</p>
               <p className="text-md font-semibold text-gray-500">

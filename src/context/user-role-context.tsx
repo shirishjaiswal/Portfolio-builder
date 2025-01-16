@@ -10,12 +10,9 @@ import {
   useEffect,
 } from "react";
 
-type ROLE_TYPE = "SUPER_ADMIN" | "ADMIN" | "USER" | undefined;
-type ROLE_INPUT_TYPE = "ROLE_SUPER_ADMIN" | "ROLE_ADMIN" | "ROLE_USER";
-
 interface UserRoleContextType {
-  userRole: ROLE_TYPE;
-  updateUserRole: (userRole: ROLE_INPUT_TYPE) => void;
+  userRole: string | undefined;
+  updateUserRole: (userRole: string) => void;
 }
 
 const UserRoleContext = createContext<UserRoleContextType | undefined>(
@@ -24,19 +21,19 @@ const UserRoleContext = createContext<UserRoleContextType | undefined>(
 
 interface UserRoleContextProps {
   children: ReactNode;
-  role : ROLE_INPUT_TYPE
+  role : string | undefined
 }
 
 const UserRoleContextProvider = ({ children, role }: UserRoleContextProps) => {
 
-  const [userRole, setUserRole] = useState<ROLE_TYPE>();
+  const [userRole, setUserRole] = useState<string | undefined>(undefined);
   
   useEffect(() => {
     updateUserRole(role);
   });
 
-  const updateUserRole = useCallback((userRole: ROLE_INPUT_TYPE ) => {
-    let role : ROLE_TYPE;
+  const updateUserRole = useCallback((userRole: string | undefined ) => {
+    let role : string;
     if(userRole === "ROLE_SUPER_ADMIN") role = "SUPER_ADMIN";
     else if(userRole === "ROLE_ADMIN") role = "ADMIN";
     else role = "USER";

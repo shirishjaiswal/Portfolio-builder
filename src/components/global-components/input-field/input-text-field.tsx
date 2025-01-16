@@ -1,19 +1,26 @@
-import { debounce } from "lodash";
-import { EyeOff, Eye } from "lucide-react";
+import { debounce, get } from "lodash";
+import { EyeOff, Eye, CircleCheck, BadgeCheck, BadgeMinus } from "lucide-react";
 import { useState, useEffect } from "react";
 
-export type InputTextFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  label: string;
-  description?: string;
-  containerClassName?: string;
-  inputClassName?: string;
-  labelClassName?: string;
-  errorMessage?: string;
-};
+export type InputTextFieldProps =
+  React.InputHTMLAttributes<HTMLInputElement> & {
+    label?: string;
+    readOnly?: boolean;
+    requireVerify?: boolean;
+    verified?: boolean;
+    description?: string;
+    containerClassName?: string;
+    inputClassName?: string;
+    labelClassName?: string;
+    errorMessage?: string;
+  };
 
 const InputTextField: React.FC<InputTextFieldProps> = ({
   type = "text" as "text" | "email" | "password" | "textarea" | "url",
   label,
+  readOnly,
+  requireVerify,
+  verified,
   required = false,
   placeholder = "",
   description,
@@ -90,20 +97,27 @@ const InputTextField: React.FC<InputTextFieldProps> = ({
             {label} {required && <span className="text-red-500">* </span>}
             {
               <span className="text-sm text-red-700">
-                {errorMessage || getError(inputValue.toLocaleString())}
+                {errorMessage || getError(inputValue?.toString())
+                  ? `(${
+                      errorMessage ?? getError(inputValue?.toString()) ?? ""
+                    })`
+                  : ""}
               </span>
             }
           </label>
         )}
 
-        <p id="input-description" className="font-light text-xs h-2 text-gray-400">
+        <p
+          id="input-description"
+          className="font-light text-xs h-2 text-gray-400"
+        >
           {description}
         </p>
       </div>
 
       <div className="relative">
         <input
-          className={`w-full px-4 py-2 border rounded-md text-sm transition-all duration-300 focus:outline-none focus:ring-2 
+          className={`w-full px-4 pr-6 py-2 border rounded-md text-sm transition-all duration-300 focus:outline-none focus:ring-2 
           ${disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"} 
           hover:shadow-sm ${inputClassName}`}
           type={type === "password" && isPasswordVisible ? "text" : type}
@@ -112,6 +126,7 @@ const InputTextField: React.FC<InputTextFieldProps> = ({
           onChange={handleChange}
           disabled={disabled}
           onBlur={handleOnBlur}
+          readOnly={readOnly}
           {...rest}
         />
 
@@ -129,6 +144,18 @@ const InputTextField: React.FC<InputTextFieldProps> = ({
             )}
           </button>
         )}
+        {requireVerify &&
+          (verified ? (
+            <BadgeCheck
+              size={18}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
+            />
+          ) : (
+            <BadgeMinus
+              size={18}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-red-500"
+            />
+          ))}
       </div>
     </div>
   );

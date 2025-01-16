@@ -37,7 +37,7 @@ const SelectableSelect: React.FC<SelectableSelectProps> = ({
   const handleSingleSelect = (option: SingleValue<OptionType>) => {
     const newValue = option ? [option.value] : [];
     setSelectedValues(newValue);
-    onChange([newValue[0]] || "");
+    onChange([newValue[0]]);
   };
 
   const handleMultiSelect = (option: MultiValue<OptionType>) => {

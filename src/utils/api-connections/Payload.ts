@@ -3,10 +3,10 @@ import {
   UserInfoParent_OP,
 } from "@/components/app/user/profile-configuration/type";
 import {  GENERATIVE_AI_PAYLOAD, HistoryItem } from "@/endpoints/next/ai/generative-ai";
-import { POST_USER_INFO_FIELD_TYPE } from "@/endpoints/spring-boot/admin/post-user-info-field";
-import { POST_USER_INFO_PARENT_TYPE } from "@/endpoints/spring-boot/admin/post-user-info-parent";
 import { LOGIN_PAYLOAD_TYPE } from "@/endpoints/spring-boot/auth/login";
 import { REGISTER_USER_PAYLOAD_TYPE } from "@/endpoints/spring-boot/auth/register-user";
+import { POST_USER_INFO_FIELD_TYPE } from "@/endpoints/spring-boot/user_info/field/post";
+import { POST_USER_INFO_PARENT_TYPE } from "@/endpoints/spring-boot/user_info/parent/post";
 
 class Payload {
   static login(email: string, password: string): LOGIN_PAYLOAD_TYPE {

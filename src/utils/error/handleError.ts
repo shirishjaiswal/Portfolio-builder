@@ -1,0 +1,8 @@
+import { toast } from "sonner";
+
+const handleError = (error: unknown) => {
+  const errorMessage = error instanceof Error ? error.message : "Something went wrong";
+  toast.error(errorMessage);
+};
+
+export default handleError;

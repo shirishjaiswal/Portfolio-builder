@@ -1,8 +1,8 @@
 "use client";
 
 import { useLoadingContext } from "@/context/loading-context";
-import getUserInfoGroup from "@/utils/api-connections/admin/get-user-info-group";
-import userDetailsFieldInputType from "@/utils/api-connections/admin/user-details-field-input-type";
+import getUserInfoGroup from "@/utils/api-connections/user-info/group/get";
+import userInfoFieldType from "@/utils/api-connections/user-info/field-type/get";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import ProfileConfiguration from "@/components/app/user/profile-configuration/profile-configuration";
@@ -19,7 +19,7 @@ const ProfileConfigurationMain = () => {
     const fetchData = async () => {
       updateIsLoading(true);
       try {
-        const fieldDataResponse = await userDetailsFieldInputType();
+        const fieldDataResponse = await userInfoFieldType();
         if (fieldDataResponse?.data)
           updateFieldInputOptions(
             getReactSelectOptions(fieldDataResponse?.data)

@@ -25,10 +25,13 @@ import {
 interface ProfileConfigurtionContextType {
   unsavedChanges: Map<
     string,
-    Map<
-      string,
-      { parentHasUnsavedChanges: boolean; field: Map<string, boolean> }
-    >
+    {
+      hasUnsavedChanges: boolean;
+      parent: Map<
+        string,
+        { hasUnsavedChanges: boolean; field: Map<string, boolean> }
+      >;
+    }
   >;
   updateUnsavedChanges: (
     hasUnsavedChanges: boolean,
@@ -131,7 +134,12 @@ const ProfileConfigurationContextProvider = ({
       parentUniqueKey?: string,
       fieldUniqueKey?: string
     ) => {
-      
+      console.log(
+        hasUnsavedChanges,
+        groupUniqueKey,
+        parentUniqueKey,
+        fieldUniqueKey
+      );
     },
     [setUnsavedChanges]
   );

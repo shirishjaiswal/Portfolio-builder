@@ -45,7 +45,7 @@ const SelectableCheckbox: React.FC<SelectableCheckboxProps> = ({
   const handleSingleSelect = (option: string) => {
     const newValue = selectedValues[0] === option ? [] : [option];
     setSelectedValues(newValue);
-    onChange([newValue[0]] || []);
+    onChange([newValue[0]]);
   };
 
   const handleMultiSelect = (option: string) => {

@@ -1,5 +1,11 @@
-import { getUniqueFieldKey, getUniqueParentKey } from "@/components/app/user/profile-configuration/helper";
-import { UserProfileData } from "@/components/app/user/profile/types";
+import {
+  getUniqueFieldKey,
+  getUniqueParentKey,
+} from "@/components/app/user/profile-configuration/helper";
+import {
+  UserProfileData,
+  UserProfileDetilsGroup,
+} from "@/components/app/user/profile/types";
 import {
   createContext,
   useCallback,
@@ -13,8 +19,13 @@ interface UserProfileContextsType {
 
   updateUserProfileData: (userProfileData: UserProfileData) => void;
 
+  activeTab: UserProfileDetilsGroup | null;
+
+  updateActiveTab: (group: UserProfileDetilsGroup) => void;
+  
+  updateActiveTabViaGroupKey: (tabKey: string) => void;
+
   updateParentIsCollapsed: (
-    groupUniqueKey: string,
     parentUniqueKey: string
   ) => void;
 
@@ -24,8 +35,6 @@ interface UserProfileContextsType {
     groupUniqueKey: string,
     parentUniqueKey: string
   ) => void;
-
-  updateCurrectActiveTab: (groupUniqueKey: string) => void;
 
   updateTextFieldValue: (
     groupUniqueKey: string,
@@ -61,8 +70,9 @@ interface UserProfileContextsProps {
 const UserProfileContextsProvider = ({
   children,
 }: UserProfileContextsProps) => {
-  const [userProfileData, setUserProfileData] =
-    useState<UserProfileData>(new Map());
+  const [userProfileData, setUserProfileData] = useState<UserProfileData>(
+    new Map()
+  );
 
   const updateUserProfileData = useCallback(
     (userProfileData: UserProfileData) => {
@@ -71,34 +81,46 @@ const UserProfileContextsProvider = ({
     []
   );
 
-  const updateCurrectActiveTab = useCallback(
-    (groupUniqueKey: string) => {
-      const newUserProfileData = new Map(userProfileData);
-      newUserProfileData.forEach((section) => {
-        section.isActive = false;
-      });
-      const currentValue = newUserProfileData.get(groupUniqueKey);
-      if (currentValue) {
-        currentValue.isActive = true;
-        updateUserProfileData(newUserProfileData);
-      }
-    },
-    [userProfileData, updateUserProfileData]
+  const [activeTab, setActiveTab] = useState<UserProfileDetilsGroup | null>(
+    null
   );
 
-  const updateParentIsCollapsed = useCallback(
-    (groupUniqueKey: string, parentUniqueKey: string) => {
+
+
+  const updateActiveTabViaGroupKey = useCallback(
+    (tabKey: string) => {
       const newUserProfileData = new Map(userProfileData);
-      if (newUserProfileData.get(groupUniqueKey)!.isActive === false) return;
-      newUserProfileData
-        .get(groupUniqueKey)
-        ?.userInfoParents.forEach((userInfoParent) => {
-          if (userInfoParent.uniqueKey === parentUniqueKey)
-            userInfoParent.isCollapsed = !userInfoParent.isCollapsed;
-        });
-      updateUserProfileData(newUserProfileData);
+      const tabKeyValue = newUserProfileData.get(tabKey);
+      if (!tabKeyValue) return;
+  
+      setActiveTab(tabKeyValue);
     },
-    [userProfileData, updateUserProfileData]
+    [userProfileData]
+  );
+
+
+  const updateParentIsCollapsed = useCallback(
+    (parentUniqueKey: string) => {
+      if (!activeTab) return;
+  
+      const updatedTab = structuredClone(activeTab);
+      updatedTab.userInfoParents = updatedTab.userInfoParents.map((userInfoParent) => {
+        if (userInfoParent.uniqueKey === parentUniqueKey) {
+          return {
+            ...userInfoParent,
+            isCollapsed: !userInfoParent.isCollapsed,
+          };
+        }
+        return userInfoParent;
+      });
+  
+      setActiveTab(updatedTab);
+  
+      // const newUserProfileData = new Map(userProfileData);
+      // newUserProfileData.set(updatedTab.configKey, updatedTab);
+      // updateUserProfileData(newUserProfileData);
+    },
+    [activeTab]
   );
 
   const updateTextFieldValue = useCallback(
@@ -196,18 +218,20 @@ const UserProfileContextsProvider = ({
     },
     [userProfileData, updateUserProfileData]
   );
+
   const duplicateParentSection = useCallback(
     (configKey: string, parentUniqueKey: string) => {
-      const newUserProfileData = new Map(userProfileData);
+      if (!activeTab) return;
   
-      const group = newUserProfileData.get(configKey);
-      if (!group) return;
+      if (activeTab.configKey !== configKey) return;
   
-      const parent = group.userInfoParents.find(
+      const updatedActiveTab = structuredClone(activeTab);
+      const parent = updatedActiveTab.userInfoParents.find(
         (parent) => parent.uniqueKey === parentUniqueKey
       );
       if (!parent) return;
   
+      // Create the duplicated parent with new unique keys
       const newParent = {
         ...parent,
         uniqueKey: getUniqueParentKey(),
@@ -224,36 +248,54 @@ const UserProfileContextsProvider = ({
         })),
       };
   
-      group.userInfoParents = [...group.userInfoParents, newParent];
+      // Add the new parent to the activeTab's parents
+      updatedActiveTab.userInfoParents = [
+        ...updatedActiveTab.userInfoParents,
+        newParent,
+      ];
   
-      updateUserProfileData(newUserProfileData);
+      // Update the activeTab state
+      setActiveTab(updatedActiveTab);
+  
+      // // Reflect the changes in userProfileData
+      // const newUserProfileData = new Map(userProfileData);
+      // newUserProfileData.set(updatedActiveTab.configKey, updatedActiveTab);
+      // updateUserProfileData(newUserProfileData);
     },
-    [userProfileData, updateUserProfileData]
+    [activeTab]
   );
   
+
+  const updateActiveTab = useCallback((group: UserProfileDetilsGroup) => {
+    setActiveTab(group);
+  }, [updateActiveTabViaGroupKey, duplicateParentSection]);
 
   const value = useMemo(
     () => ({
       userProfileData,
+      activeTab,
       updateUserProfileData,
+      updateActiveTab,
+      updateActiveTabViaGroupKey,
       updateParentIsCollapsed,
-      updateCurrectActiveTab,
       updateTextFieldValue,
       updateInputArrayField,
       updateDateValue,
       deleteParent,
-      duplicateParentSection
+      duplicateParentSection,
     }),
     [
       userProfileData,
+      activeTab,
       updateUserProfileData,
+      updateActiveTab,
+      updateActiveTabViaGroupKey,
       updateParentIsCollapsed,
-      updateCurrectActiveTab,
       updateTextFieldValue,
       updateInputArrayField,
       updateDateValue,
       deleteParent,
-      duplicateParentSection
+      duplicateParentSection,
     ]
   );
 

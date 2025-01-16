@@ -3,14 +3,13 @@ import SelectableCheckbox from "@/components/global-components/checkbox/selectab
 import SelectableSelect from "@/components/global-components/select/selectable-select";
 import SelectableCreatableSelect from "@/components/global-components/select/selectable-creatable-select";
 import { useUserProfileContexts } from "@/context/user-profile-contexts";
-import { useState } from "react";
-import { UserProfileDetailsField, UserProfileDetilsGroup } from "@/components/app/user/profile/types";
+import { useEffect, useState } from "react";
+import { UserProfileDetailsField } from "@/components/app/user/profile/types";
 import Duration from "@/components/global-components/date/duration";
 import { DateValue } from "@nextui-org/calendar";
 import Date from "@/components/global-components/date/date";
 
 type UserProfileFieldSectionProps = {
-  group: UserProfileDetilsGroup;
   parentUniqueKey: string;
   field: UserProfileDetailsField;
 };
@@ -18,15 +17,18 @@ type UserProfileFieldSectionProps = {
 const similarFieldParamaters: string[] = ["TEXT", "TEXTAREA", "EMAIL", "PHONE"];
 
 const UserProfileFieldSection: React.FC<UserProfileFieldSectionProps> = ({
-  group,
   parentUniqueKey,
   field,
 }: UserProfileFieldSectionProps) => {
-  const { updateTextFieldValue, updateInputArrayField, updateDateValue } =
-    useUserProfileContexts();
+  const { activeTab, updateTextFieldValue, updateInputArrayField, updateDateValue } = useUserProfileContexts();
 
-  const [currentField, setCurrentField] =
-    useState<UserProfileDetailsField>(field);
+  const [currentField, setCurrentField] = useState<UserProfileDetailsField>(field);
+
+  if(!activeTab) return null;
+  
+  useEffect(() => {
+    setCurrentField(field);
+  }, [field]);
 
   const handleCheckboxSelection = (value: string[]) => {
     setCurrentField({
@@ -38,7 +40,7 @@ const UserProfileFieldSection: React.FC<UserProfileFieldSectionProps> = ({
       hasUnsavedChanges: true,
     });
     updateInputArrayField(
-      group.configKey,
+      activeTab?.configKey,
       parentUniqueKey,
       field.uniqueKey,
       value
@@ -59,7 +61,7 @@ const UserProfileFieldSection: React.FC<UserProfileFieldSectionProps> = ({
 
   const handleInputTextFieldBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateTextFieldValue(
-       group.configKey,
+       activeTab?.configKey,
       parentUniqueKey,
       field.uniqueKey,
       e.target.value
@@ -68,7 +70,7 @@ const UserProfileFieldSection: React.FC<UserProfileFieldSectionProps> = ({
 
   const handleDropDownSelection = (value: string[]) => {
     updateInputArrayField(
-       group.configKey,
+       activeTab?.configKey,
       parentUniqueKey,
       field.uniqueKey,
       value
@@ -77,7 +79,7 @@ const UserProfileFieldSection: React.FC<UserProfileFieldSectionProps> = ({
 
   const handleCreatableSelect = (value: string[]) => {
     updateInputArrayField(
-       group.configKey,
+       activeTab?.configKey,
       parentUniqueKey,
       field.uniqueKey,
       value
@@ -89,7 +91,7 @@ const UserProfileFieldSection: React.FC<UserProfileFieldSectionProps> = ({
     type: "startDate" | "endDate"
   ) => {
     updateDateValue(
-      group.configKey,
+      activeTab?.configKey,
       parentUniqueKey,
       field.uniqueKey,
       type,

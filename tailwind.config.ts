@@ -1,4 +1,4 @@
-import { nextui } from '@nextui-org/theme';
+import {nextui} from '@nextui-org/theme';
 import type { Config } from "tailwindcss";
 
 function generatePercentages(range: number): Record<string, string> {
@@ -14,7 +14,7 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./node_modules/@nextui-org/theme/dist/components/(button|calendar|checkbox|date-picker|dropdown|input|modal|radio|spinner|popover|ripple|date-input|menu|divider).js"
+    "./node_modules/@nextui-org/theme/dist/components/(button|checkbox|dropdown|input|modal|spinner|ripple|menu|divider|popover).js"
   ],
   theme: {
     extend: {
@@ -49,7 +49,6 @@ const config: Config = {
           "700": "#C4320A",
         },
       },
-      top: generatePercentages(100),
       margin: generatePercentages(100),
       padding: generatePercentages(100),
       width: generatePercentages(100),
@@ -59,33 +58,7 @@ const config: Config = {
       minHeight: generatePercentages(100),
       maxHeight: generatePercentages(100),
     },
-    screens: {
-      'sm': '640px',   // Small screens (mobile)
-      'md': '768px',   // Medium screens (tablets)
-      'lg': '1024px',  // Large screens (desktops)
-      'xl': '1280px',  // Extra large screens (large desktops)
-      '2xl': '1536px', // Very large screens
-    },
-    keyframes: {
-      fadeIn: {
-        '0%': { opacity: '0' },
-        '100%': { opacity: '1' },
-      },
-      typing: {
-        '0%': { width: '0%' },
-        '100%': { width: '100%' },
-      },
-      blink: {
-        '50%': { borderColor: 'transparent' },
-        '100%': { borderColor: 'currentColor' },
-      },
-    },
-    animation: {
-      fadeIn: 'fadeIn 1s ease-in-out',
-      typing: 'typing 2s steps(30, end) forwards, blink 0.75s step-end infinite',
-    },
   },
   plugins: [nextui()],
 };
-
 export default config;

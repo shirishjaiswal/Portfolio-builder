@@ -1,5 +1,4 @@
 import Sidebar from "@/components/side-bar/side-bar-panel";
-import { NavigationSectionContentProvider } from "@/context/navigation-section-content-context";
 import { SideBarContextProvider } from "@/context/side-bar-contest-context";
 
 export default function RootLayout({
@@ -9,7 +8,6 @@ export default function RootLayout({
 }>) {
   return (
     <SideBarContextProvider>
-      <NavigationSectionContentProvider>
         <div className="w-full flex justify-end">
           <div className="w-20p h-100p bg-gray-50 py-2 fixed left-0">
             <Sidebar />
@@ -18,7 +16,6 @@ export default function RootLayout({
             <div className="bg-white mx-8 py-10">{children}</div>
           </div>
         </div>
-      </NavigationSectionContentProvider>
     </SideBarContextProvider>
   );
 }

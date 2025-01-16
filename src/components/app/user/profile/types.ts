@@ -13,7 +13,6 @@ export type UserProfileParents = {
 export type UserProfileFields = {
   configKey: string;
   uniqueKey: string;
-  input: string;
   label: string;
   value: value
 }

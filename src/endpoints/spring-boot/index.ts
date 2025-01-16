@@ -10,6 +10,7 @@ interface Config {
   body?: string;
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type Connection = {
   method: string;
   endpoint: string;
@@ -20,11 +21,13 @@ type Headers = {
   [key: string]: string;
 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type Response = {
   data: any | null;
   error: any | null;
 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const fetchData = async ({
   connection,
   headers = {},

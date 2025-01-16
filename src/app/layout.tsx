@@ -6,8 +6,10 @@ import { EdgeStoreProvider } from "@/lib/edgestore";
 import { LoadingContextProvider } from "@/context/loading-context";
 import ToastNotification from "@/components/global-components/toast/toast-notification";
 import { UserRoleContextProvider } from "@/context/user-role-context";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 import { cookies } from "next/headers";
+import { CustomJwtPayload } from "@/lib/session";
+
 
 export const metadata: Metadata = {
   title: "Portfolio Builder",
@@ -30,9 +32,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookie = cookies().get("pb_session_token")?.value;
-  let decodedToken: any;
-  if (cookie) decodedToken = jwtDecode(cookie);
-  const role = decodedToken?.roles[0];
+
+  let decodedToken: CustomJwtPayload| null = null;
+  if (cookie) {
+    decodedToken = jwtDecode<CustomJwtPayload>(cookie);
+  }
+
+  const role = decodedToken?.roles?.[0];
   return (
     <html lang="en" className="h-full">
       <body className={`${Roboto.variable} h-full`}>

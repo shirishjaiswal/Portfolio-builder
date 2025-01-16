@@ -1,7 +1,13 @@
 "use server";
 
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 import { cookies } from "next/headers";
+
+
+export interface CustomJwtPayload extends JwtPayload {
+  roles: string[];
+  id: number;
+}
 
 export async function createSession(
   accessToken: string,
@@ -82,7 +88,7 @@ export async function getRole(
 ): Promise<string> {
   try {
     if (!accessToken) return "";
-    const decryptedAccessToken = jwtDecode(accessToken);
+    const decryptedAccessToken : CustomJwtPayload = jwtDecode(accessToken);
     return decryptedAccessToken?.roles[0];
   } catch (error) {
     return "";
@@ -92,9 +98,19 @@ export async function getRole(
 export async function getUserId(accessToken: string | undefined): Promise<number> {
   try {
     if (!accessToken) return -1;
-    const decryptedAccessToken = jwtDecode(accessToken);
+    const decryptedAccessToken : CustomJwtPayload = jwtDecode(accessToken);
     return decryptedAccessToken?.id;
   } catch (error) {
     return -1;
+  }
+}
+
+export async function getUserName(accessToken: string | undefined): Promise<string> {
+  try {
+    if (!accessToken) return "";
+    const decryptedAccessToken = jwtDecode(accessToken);
+    return decryptedAccessToken?.sub ?? "";
+  } catch (error) {
+    return "";
   }
 }

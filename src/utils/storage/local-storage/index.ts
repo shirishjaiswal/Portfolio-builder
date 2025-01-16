@@ -1,6 +1,5 @@
 "use client";
 
-import maps from "./maps";
 
 const KEY_PREFIX = "SHIRISH";
 
@@ -25,7 +24,6 @@ const localstorage = {
   setData,
   getData,
   omitData,
-  maps
 };
 
 export default localstorage;

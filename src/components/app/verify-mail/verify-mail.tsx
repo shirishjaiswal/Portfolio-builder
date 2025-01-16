@@ -15,11 +15,9 @@ const VerifyMail = () => {
   const router = useRouter();
   const { isLoading, updateIsLoading } = useLoadingContext();
 
-  // Prevent duplicate execution in Strict Mode
   const executedRef = useRef(false);
 
   useEffect(() => {
-    // Skip if already executed (Strict Mode safeguard)
     if (executedRef.current) return;
     executedRef.current = true;
 

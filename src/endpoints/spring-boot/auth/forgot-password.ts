@@ -1,7 +1,7 @@
-const FORGOT_PASSWORD = () => {
+const FORGOT_PASSWORD = (email : string) => {
   return {
-    method: "POST",
-    endpoint: "/auth/forgot-password",
+    method: "GET",
+    endpoint: `/auth/forgot-password?email=${email}`,
   };
 };
 

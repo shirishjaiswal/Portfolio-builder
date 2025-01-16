@@ -1,12 +1,12 @@
 import Button from "@/components/global-components/Button/button";
 import { useUserProfileContexts } from "@/context/user-profile-contexts";
 
-const UserProfileTab = () => {
-  const { userProfileData, updateCurrectActiveTab } =
+const UserProfileTab: React.FC = () => {
+  const { userProfileData, activeTab, updateActiveTabViaGroupKey } =
     useUserProfileContexts();
-    
+
   const handleNavigationTabClick = (key: string) => () => {
-    updateCurrectActiveTab(key);
+    updateActiveTabViaGroupKey(key);
   };
 
   return (
@@ -20,10 +20,10 @@ const UserProfileTab = () => {
             onClick={handleNavigationTabClick(userInfoGroupKey)}
             className={`relative px-6 py-3 text-medium font-semibold transition-all duration-300 ease-in-out
               ${
-                userProfileData.get(userInfoGroupKey)!.isActive &&
+                activeTab?.uniqueKey === userInfoGroupKey &&
                 "text-sky-600 bg-gray-100 rounded-t-md"
               } hover:text-sky-600 ${
-              !userProfileData.get(userInfoGroupKey)!.isActive &&
+              activeTab?.uniqueKey !== userInfoGroupKey &&
               "hover:bg-gray-50 hover:rounded-t-md"
             }`}
           >

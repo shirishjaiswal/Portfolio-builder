@@ -34,7 +34,6 @@ const RegisterForm: React.FC<RegisterFormProps> = (
             placeholder="Enter your Email"
             value={props.email}
             onChange={(e) => props.setEmail(e.target.value)}
-            isInvalid={props.isDataFormatValid.email}
             errorMessage={
               props.email.length > 0
                 ? props.isDataFormatValid.emailWarning
@@ -47,7 +46,6 @@ const RegisterForm: React.FC<RegisterFormProps> = (
             placeholder="Enter your password"
             value={props.password}
             onChange={(e) => props.setPassword(e.target.value)}
-            isInvalid={props.isDataFormatValid.password}
             errorMessage={
               props.password.length > 0
                 ? props.isDataFormatValid.passwordWarning
@@ -60,7 +58,6 @@ const RegisterForm: React.FC<RegisterFormProps> = (
             placeholder="Re-enter your password"
             value={props.confirmPassword}
             onChange={(e) => props.setConfirmPassword(e.target.value)}
-            isInvalid={props.isDataFormatValid.password}
             errorMessage={
               props.password.length > 0
                 ? props.isDataFormatValid.confirmPasswordWarning

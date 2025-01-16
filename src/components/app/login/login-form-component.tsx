@@ -4,7 +4,7 @@ import { useState } from "react";
 import login from "@/utils/api-connections/auth/login";
 import { Response } from "@/endpoints/spring-boot/index";
 import LoginForm from "@/components/app/login/login-form";
-import UserDetailsValidation from "@/utils/validation/user-details-validation";
+import UserDetails from "@/utils/validation/user-details-validation";
 import { useLoadingContext } from "@/context/loading-context";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -14,6 +14,8 @@ import {
 } from "@/components/app/login/type";
 import mailVerificationRequest from "@/utils/api-connections/auth/mail-verification-request";
 import { useUserRoleContextProvider } from "@/context/user-role-context";
+import forgotPasswordRequest from "@/utils/api-connections/auth/forgot-password-request";
+import handleError from "@/utils/error/handleError";
 
 const loginFormValidate: LoginFormValidate = {
   email: false,
@@ -31,6 +33,7 @@ const LoginFormComponent = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [forgotPasswordMail, setForgotPasswordMail] = useState("");
   const [loginFormValid, setLoginFormValid] = useState(loginFormValidate);
   const [verificationMail, setVerificationMail] = useState("");
   const [mailVerificationFormValid, setMailVerificationFormValid] = useState(
@@ -43,39 +46,39 @@ const LoginFormComponent = () => {
     try {
       updateIsLoading(true);
       e.preventDefault();
-
-      const isEmailValid = UserDetailsValidation.email(email);
-      const isPasswordValid = password.length > 0;
-
-      if (!isEmailValid || !isPasswordValid) {
+  
+      const emailValidation = UserDetails.validateEmail(email);
+      const passwordValidation = UserDetails.validateRequiredField(password);
+  
+      if (!emailValidation.isValid || !passwordValidation.isValid) {
         setLoginFormValid({
-          email: !isEmailValid,
-          emailWarning:
-            email.length <= 0 ? "Field is required" : "Enter a valid email",
-          password: !isPasswordValid,
-          passwordWarning: "Field is required",
+          email: !emailValidation.isValid,
+          emailWarning: emailValidation.warning,
+          password: !passwordValidation.isValid,
+          passwordWarning: passwordValidation.warning,
         });
         return;
       } else {
-        setLoginFormValid(loginFormValidate);
+        setLoginFormValid(loginFormValidate); 
       }
-
+  
       const response = await login(email, password);
-
-      if (!response || response.error)
+  
+      if (!response || response.error) {
         throw new Error(response?.error || "An error occurred during login");
-      
+      }
+  
+      if (!response.data || !response.data.authorities || response.data.authorities.length === 0) {
+        throw new Error("Missing or invalid user role data");
+      }
+  
       updateUserRole(response.data.authorities[0].authority);
-
-      // Handle successful login
+  
       toast.success("Login successful!");
-
-      // Redirect to home page
       router.replace("/user/home");
+  
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "An unexpected error occurred";
-      toast.error(errorMessage);
+      handleError(error); 
     } finally {
       updateIsLoading(false);
     }
@@ -86,7 +89,7 @@ const LoginFormComponent = () => {
       updateIsLoading(true);
 
       const isVerificationMailValid =
-        UserDetailsValidation.email(verificationMail);
+        UserDetails.validateEmail(verificationMail);
       const isVerificationMailEmpty = verificationMail.length <= 0;
 
       if (!isVerificationMailValid || isVerificationMailEmpty) {
@@ -107,12 +110,9 @@ const LoginFormComponent = () => {
 
       if (response === undefined) throw new Error("Something went wrong");
       if (response?.error) throw new Error(response.error);
-
       toast.success(response.data);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "An unexpected error occurred";
-      toast.error(errorMessage);
+      handleError(error);
     } finally {
       updateIsLoading(false);
     }
@@ -122,20 +122,36 @@ const LoginFormComponent = () => {
     setMailVerificationFormValid(mailVerificationFormValidate);
   };
 
+  const handleForgotPasswordRequest = async () => {
+    updateIsLoading(true);
+    try {
+      const response = await forgotPasswordRequest(forgotPasswordMail);
+      if (response === undefined) throw new Error("Something went wrong");
+      if (response?.error) throw new Error(response.error);
+      toast.success(response.data);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      updateIsLoading(false);
+    }
+  };
+
   return (
     <LoginForm
       email={email}
       password={password}
+      forgotPasswordMail={forgotPasswordMail}
       loginFormValidate={loginFormValid}
-      mailVerificationFormValidate={mailVerificationFormValid}
       verificationMail={verificationMail}
       isLoading={isLoading}
       setEmail={setEmail}
       setPassword={setPassword}
+      setForgotPasswordMail={setForgotPasswordMail}
       handleLoginSubmit={handleLoginSubmit}
       setVerificationMail={setVerificationMail}
       setDefaultVerificationMailValid={setDefaultVerificationMailValid}
       handleVerificationMail={handleVerificationMail}
+      handleForgotPasswordRequest={handleForgotPasswordRequest}
     />
   );
 };

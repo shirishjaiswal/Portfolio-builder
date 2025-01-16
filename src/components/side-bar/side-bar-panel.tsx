@@ -5,7 +5,6 @@ import { SideBarItems } from "./type";
 import SideBarItem from "./sidebar-button";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-import { useUserRoleContextProvider } from "@/context/user-role-context";
 
 const sidebarItemSet: SideBarItems[] = [
   {

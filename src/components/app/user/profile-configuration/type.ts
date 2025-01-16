@@ -9,11 +9,11 @@ export interface ParentSection {
   labelVisible: boolean;
 }
 export type value = {
-  inputValue?: string
+  value?: string
   startDate?: string
   endDate?: string
   onGoing?: boolean
-  inputValueArray?: string[]
+  listValue?: string[]
 }
 
 export type UserInfoField_OP = {

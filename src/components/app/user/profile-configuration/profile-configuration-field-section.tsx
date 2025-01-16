@@ -155,9 +155,6 @@ const ProfileConfigurationFieldSection: React.FC<
           placeholder="Enter Label"
           value={currentField.label}
           onChange={(e) => handleUpdateCurrentFieldLabel(e.target.value)}
-          onError={(e) => {
-            console.log(e);
-          }}
           max={36}
           required
         />

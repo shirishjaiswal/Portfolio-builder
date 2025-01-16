@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { Sidebar, Menu, MenuItem, MenuItemStyles } from "react-pro-sidebar";
 import {
@@ -15,20 +13,20 @@ import { useUserRoleContextProvider } from "@/context/user-role-context";
 import { useLoadingContext } from "@/context/loading-context";
 import Loading from "@/components/loading/loading";
 import logout from "@/utils/api-connections/auth/logout";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation"; 
 
-const SidebarComponent = ({ pathName }: { pathName: string | null }) => {
+const SidebarComponent = () => {
   const router = useRouter();
+  const pathname = usePathname(); 
   const { userRole } = useUserRoleContextProvider();
   const [collapsed, setCollapsed] = useState(true);
   const [activeMenuItem, setActiveMenuItem] = useState<string | null>(null);
   const { isLoading, updateIsLoading } = useLoadingContext();
 
   useEffect(() => {
-    if (pathName) {
-      setActiveMenuItem(pathName);
-    }
-  });
+    const currentPath = pathname.split("/")[2];
+    setActiveMenuItem(currentPath);
+  }, [pathname]);
 
   const handleHomeClick = () => {
     router.push("/user/home");
@@ -44,8 +42,8 @@ const SidebarComponent = ({ pathName }: { pathName: string | null }) => {
 
   const handleSettingsClick = () => {
     router.push("/user/settings");
-  }
-  
+  };
+
   const handleProfileConfigurationClick = () => {
     router.push("/user/profile-configuration");
   };
@@ -105,6 +103,7 @@ const SidebarComponent = ({ pathName }: { pathName: string | null }) => {
       color: "#b23b3b", // Optional: highlight text color if needed
     }),
   };
+
   return (
     <div className="flex h-full">
       <Sidebar
@@ -117,14 +116,14 @@ const SidebarComponent = ({ pathName }: { pathName: string | null }) => {
             <Menu menuItemStyles={menuItemStyles}>
               <MenuItem
                 icon={<House />}
-                onClick={() => handleHomeClick()}
+                onClick={handleHomeClick}
                 active={activeMenuItem === "home"}
               >
                 Home
               </MenuItem>
               <MenuItem
                 icon={<CircleUserRound />}
-                onClick={() => handleProfileClick()}
+                onClick={handleProfileClick}
                 active={activeMenuItem === "profile"}
               >
                 Profile
@@ -134,14 +133,14 @@ const SidebarComponent = ({ pathName }: { pathName: string | null }) => {
               </MenuItem>
               <MenuItem
                 icon={<FileUserIcon />}
-                onClick={() => handleResumeClick()}
+                onClick={handleResumeClick}
                 active={activeMenuItem === "resume"}
               >
                 Resume
               </MenuItem>
               <MenuItem
                 icon={<Settings />}
-                onClick={() => handleSettingsClick()}
+                onClick={handleSettingsClick}
                 active={activeMenuItem === "settings"}
               >
                 Settings
@@ -151,7 +150,7 @@ const SidebarComponent = ({ pathName }: { pathName: string | null }) => {
               <Menu menuItemStyles={menuItemStyles}>
                 <MenuItem
                   icon={<Blocks />}
-                  onClick={() => handleProfileConfigurationClick()}
+                  onClick={handleProfileConfigurationClick}
                   active={activeMenuItem === "profile-configuration"}
                 >
                   Profile Configuration

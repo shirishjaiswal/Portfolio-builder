@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLoadingContext } from "@/context/loading-context";
-import UserDetailsValidation from "@/utils/validation/user-details-validation";
+import UserDetails from "@/utils/validation/user-details-validation";
 import register from "@/utils/api-connections/auth/register";
 import RegisterForm from "@/components/app/register/register-form";
 import { Response } from "@/endpoints/spring-boot";
 import { toast } from "sonner";
 import { FormDataValid } from "@/components/app/register/types";
+import handleError from "@/utils/error/handleError";
+import initializeUserProfileDetails from "@/utils/api-connections/auth/initialize-user-profile-details";
 
 const formDataValid : FormDataValid= {
   email: false,
@@ -32,9 +34,9 @@ const RegisterFormComponent = () => {
       updateIsLoading(true);
       e.preventDefault();
 
-      const isEmailValid = UserDetailsValidation.email(email);
+      const isEmailValid = UserDetails.validateEmail(email);
 
-      const isPasswordValid = UserDetailsValidation.password(password);
+      const isPasswordValid = UserDetails.validatePassword(password);
 
       const isConfirmPasswordValid =
         isPasswordValid && password === confirmPassword;
@@ -70,13 +72,18 @@ const RegisterFormComponent = () => {
 
       if (response?.error) throw new Error(response.error);
 
+      const user = await initializeUserProfileDetails(response.data);
+
+      if (!user?.data) throw new Error(user?.error);
+      
+      console.log(user);
+
       toast.success("Verification Link has been sent to your email");
 
       router.push("/login");
+
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "An unexpected error occurred";
-      toast.error(errorMessage);
+      handleError(error);
     } finally {
       updateIsLoading(false);
     }

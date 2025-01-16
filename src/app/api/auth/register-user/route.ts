@@ -17,22 +17,22 @@ export async function POST(request: Request) {
       );
     }
 
-    const response = await fetchData({
+    const springResponse = await fetchData({
       connection: REGISTER_USER(
         Payload.register(email, password, confirmPassword)
       ),
     });
 
-    if (!response?.data) {
+    if (!springResponse?.data) {
       return NextResponse.json(
-        { error: response?.error || "Authentication failed" },
+        { error: springResponse?.error || "Authentication failed" },
         { status: 500 }
       );
     }
 
-    const res = NextResponse.json({ data: response.data }, { status: 200 });
+    const response = NextResponse.json({ data: springResponse.data }, { status: 200 });
 
-    return res;
+    return response;
   } catch (error) {
     return NextResponse.json(
       { error: "An internal server error occurred" },

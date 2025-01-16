@@ -4,13 +4,13 @@ interface Config {
   method: string;
   url: string;
   headers: Headers;
-  body?: any;
+  body?: unknown;
 }
 
 export type Connection = {
   method: string;
   endpoint: string;
-  payload?: any;
+  payload?: unknown;
   stringifyBody?: boolean;
 };
 
@@ -18,11 +18,13 @@ type Headers = {
   [key: string]: string;
 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type Response = {
   data: any | null;
   error: any | null;
 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const fetchData = async ({
   connection,
   headers = {},
@@ -75,7 +77,7 @@ const fetchData = async ({
     const response = await fetch(config.url, {
       method: config.method,
       headers: config.headers,
-      body: config.body,
+      body: config.body as RequestInit["body"],
     });
 
     // Handle JSON responses

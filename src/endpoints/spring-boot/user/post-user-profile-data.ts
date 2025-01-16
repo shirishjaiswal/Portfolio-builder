@@ -3,7 +3,7 @@ import { Connection } from "@/endpoints/spring-boot";
 type POST_USER_PROFILE_DATA_PAYLOAD = {
   userProfileDataJSON: string;
   userEntity: {
-    id: Number;
+    id: number;
   };
 };
 const POST_USER_PROFILE_DATA = (

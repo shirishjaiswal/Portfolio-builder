@@ -1,5 +1,5 @@
-import ProfileConfigurationTab from "./profile-configuration-tab";
-import ProfileConfigurationGroupSection from "./profile-congifuration-group-section";
+import ProfileConfigurationTab from "@/components/app/user/profile-configuration/profile-configuration-tab";
+import ProfileConfigurationGroupSection from "@/components/app/user/profile-configuration/profile-congifuration-group-section";
 
 const ProfileConfiguration = () => {
   return (

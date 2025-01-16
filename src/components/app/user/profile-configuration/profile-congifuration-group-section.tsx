@@ -10,10 +10,10 @@ import { getActiveTab, getUniqueParentKey } from "./helper";
 import { CirclePlus, Save } from "lucide-react";
 import ProfileConfigurationParentSection from "@/components/app/user/profile-configuration/profile-configuration-parent-section";
 import DialogBox from "@/components/global-components/dialogue-box/dialogue-box";
-import putUserInfoGroup from "@/utils/api-connections/admin/put-user-info-group";
+import putUserInfoGroup from "@/utils/api-connections/user-info/group/put";
 import { useLoadingContext } from "@/context/loading-context";
 import { toast } from "sonner";
-import postUserInfoParent from "@/utils/api-connections/admin/post-user-info-parent";
+import postUserInfoParent from "@/utils/api-connections/user-info/parent/post";
 import Loading from "@/components/loading/loading";
 const changeConfigKeyAndRemoveId = (userInfoFields: UserInfoField_OP[]) => {
   return userInfoFields.map((userInfoField) => {
@@ -26,7 +26,7 @@ const changeConfigKeyAndRemoveId = (userInfoFields: UserInfoField_OP[]) => {
 };
 const ProfileConfigurationGroupSection = () => {
 
-  const { profileConfigurationData, addNewParentSection, unsavedChanges } =
+  const { profileConfigurationData, addNewParentSection } =
     useProfileConfigurationContextProvider();
 
   const { updateIsLoading } = useLoadingContext();
@@ -132,11 +132,11 @@ const ProfileConfigurationGroupSection = () => {
   };
 
   const hasUnsavedChanges = () => {
-    let hasUnsavedChanges = false;
-    unsavedChanges?.get(activeTab!.configKey)?.forEach((parent) => {
-      parent.field.size > 0 && (hasUnsavedChanges = hasUnsavedChanges || true);
-    });
-    return hasUnsavedChanges;
+    // let hasUnsavedChanges = false;
+    // unsavedChanges?.get(activeTab!.configKey)?.forEach((parent) => {
+    //   parent.field.size > 0 && (hasUnsavedChanges = hasUnsavedChanges || true);
+    // });
+    return false;
   };
 
   const handleSaveGroupChanges = async () => {
@@ -155,8 +155,6 @@ const ProfileConfigurationGroupSection = () => {
     }
   };
   
-  console.log("profileConfigurationData", profileConfigurationData);
-
   return activeTab ? (
     <>
       <div className="flex justify-end w-full gap-2">

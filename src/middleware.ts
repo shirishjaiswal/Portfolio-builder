@@ -1,9 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getRole, validateToken } from "./lib/session";
-import refreshCookies from "./utils/api-connections/user/refresh-token";
+import refreshCookies from "./utils/api-connections/auth/refresh-token";
 
 export async function middleware(req: NextRequest) {
-  const publicRoutes = ["/", "/login", "/register", "/verify"];
+  const publicRoutes = ["/","/auth", "/login", "/register", "/verify", "/initialize-user-profile-details"];
   const currentPath = req.nextUrl.pathname;
 
   // Skip middleware for static files and Next.js internal routes

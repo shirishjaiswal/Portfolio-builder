@@ -11,7 +11,7 @@ import ParentSectionActionButtons from "./parent-section-action-buttons";
 import { useProfileConfigurationContextProvider } from "@/context/profile-configuration-context";
 import { CirclePlus } from "lucide-react";
 import ProfileConfigurationParentEditSection from "./profile-configuration-parent-edit-section";
-import postUserInfoField from "@/utils/api-connections/admin/post-user-info-field";
+import postUserInfoField from "@/utils/api-connections/user-info/field/post";
 import { getUniqueFieldKey } from "./helper";
 import { toast } from "sonner";
 import Loading from "@/components/loading/loading";
@@ -29,7 +29,7 @@ const ProfileConfigurationParentSection: React.FC<
   group,
   handleAddNewParentSection,
 }: ProfileConfigurationParentSectionProps) => {
-  const { unsavedChanges, addNewTextField, updateParentSection, deleteField } =
+  const { addNewTextField, updateParentSection, deleteField } =
     useProfileConfigurationContextProvider();
 
   const [isAddingNewField, setIsAddingNewField] = useState(false);
@@ -115,7 +115,6 @@ const ProfileConfigurationParentSection: React.FC<
       const response = await postUserInfoField(
         userInfoField,
         parent.id,
-        group.id
       );
       if (!response?.data) throw new Error(response?.error);
       addNewTextField(group.configKey, parent.configKey, response.data);
@@ -133,16 +132,16 @@ const ProfileConfigurationParentSection: React.FC<
   };
 
   const isUnsavedChangesBadgeVisible = () => {
-    const groupUnsavedChanges = unsavedChanges?.get(group.configKey);
-    let parentUnsavedChanges;
-    if (groupUnsavedChanges !== undefined)
-      parentUnsavedChanges = groupUnsavedChanges.get(parent.configKey);
-    if (
-      (parentUnsavedChanges !== undefined &&
-        parentUnsavedChanges.field.size > 0) ||
-      parentUnsavedChanges?.parentHasUnsavedChanges
-    )
-      return true;
+    // const groupUnsavedChanges = unsavedChanges?.get(group.configKey);
+    // let parentUnsavedChanges;
+    // if (groupUnsavedChanges !== undefined)
+    //   parentUnsavedChanges = groupUnsavedChanges.get(parent.configKey);
+    // if (
+    //   (parentUnsavedChanges !== undefined &&
+    //     parentUnsavedChanges.field.size > 0) ||
+    //   parentUnsavedChanges?.parentHasUnsavedChanges
+    // )
+    //   return true;
     return false;
   };
 

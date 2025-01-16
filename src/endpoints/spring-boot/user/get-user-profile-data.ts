@@ -1,7 +1,7 @@
 import { Connection } from "@/endpoints/spring-boot";
 
 const GET_USER_PROFILE_DATA = (
-  userProfileId : Number
+  userProfileId : number
 ): Connection => {
   return {
     method: "GET",

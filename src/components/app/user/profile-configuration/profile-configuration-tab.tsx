@@ -5,11 +5,11 @@ import { useProfileConfigurationContextProvider } from "@/context/profile-config
 import DialogBox from "@/components/global-components/dialogue-box/dialogue-box";
 import { getActiveTab, getUniqueGroupKey } from "./helper";
 import { validateString } from "@/utils/validation/input";
-import deleteUserInfoGroup from "@/utils/api-connections/admin/delete-user-info-group";
 import { useLoadingContext } from "@/context/loading-context";
 import { toast } from "sonner";
-import { UserInfoGroup_OP } from "./type";
-import postUserInfoGroup from "@/utils/api-connections/admin/post-user-info-group";
+import { UserInfoGroup_OP } from "@/components/app/user/profile-configuration/type";
+import deleteUserInfoGroupById from "@/utils/api-connections/user-info/group/delete-by-id";
+import postUserInfoGroup from "@/utils/api-connections/user-info/group/post";
 
 const ProfileConfigurationTab = () => {
   const {
@@ -58,7 +58,7 @@ const ProfileConfigurationTab = () => {
       const userInfoGroup = getActiveTab(profileConfigurationData);
       const userInfoGroupId = userInfoGroup?.id;
       if (userInfoGroupId)
-        response = await deleteUserInfoGroup(userInfoGroupId);
+        response = await deleteUserInfoGroupById(userInfoGroupId);
       if (userInfoGroupId && !response?.data)
         throw new Error("Failed to delete");
       toast.success("Deleted successfully");

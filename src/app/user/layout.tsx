@@ -1,14 +1,12 @@
 "use client";
 
-import { UserNavigationContenContextProvider } from "@/context/user-navigation-content-context";
-import { UserProfileContextProvider } from "@/context/user-profile-context";
 import SidebarComponent from "@/components/app/user/sidebar/sidebar";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import PageTitle from "@/components/app/admin-control/page-title/page-title";
 import { ProfileConfigurationContextProvider } from "@/context/profile-configuration-context";
-import { UniqueKeyContextProvider } from "@/context/uniquekey-context";
 import { UserProfileContextsProvider } from "@/context/user-profile-contexts";
+import { UserSettingsContextProvider } from "@/context/user-settings-context";
 
 export default function RootLayout({
   children,
@@ -18,6 +16,7 @@ export default function RootLayout({
   const [pathname, setPathname] = useState<string | null>(null);
   const path = usePathname();
   const [title, setTitle] = useState<string>();
+
   useEffect(() => {
     if (path.includes("home")) {
       setPathname("home");
@@ -35,26 +34,26 @@ export default function RootLayout({
       setPathname("settings");
       setTitle("Settings");
     }
+    if(path.includes("resume")) {
+      setPathname("resume");
+      setTitle("Resume");
+    }
   }, [path]);
   return (
-    <UserProfileContextsProvider>
-      <UniqueKeyContextProvider>
+    <UserSettingsContextProvider>
+      <UserProfileContextsProvider>
         <ProfileConfigurationContextProvider>
-          <UserNavigationContenContextProvider>
-            <UserProfileContextProvider>
-              <div className="flex h-92p gap-4">
-                <div className="h-full">
-                  <SidebarComponent pathName={pathname} />
-                </div>
-                <div className="w-94p pt-2 mr-4">
-                  <PageTitle title={title ?? ""} />
-                  {children}
-                </div>
+            <div className="flex h-92p gap-4">
+              <div className="h-full">
+                <SidebarComponent />
               </div>
-            </UserProfileContextProvider>
-          </UserNavigationContenContextProvider>
+              <div className="w-94p pt-2 mr-4">
+                <PageTitle title={title ?? ""} />
+                {children}
+              </div>
+            </div>
         </ProfileConfigurationContextProvider>
-      </UniqueKeyContextProvider>
-    </UserProfileContextsProvider>
+      </UserProfileContextsProvider>
+    </UserSettingsContextProvider>
   );
 }

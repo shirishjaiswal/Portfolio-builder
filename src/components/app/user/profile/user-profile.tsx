@@ -1,5 +1,5 @@
-import UserProfileGroupSection from "./user-profile-group-section";
-import UserProfileTab from "./user-profile-tab";
+import UserProfileGroupSection from "@/components/app/user/profile/user-profile-group-section";
+import UserProfileTab from "@/components/app/user/profile/user-profile-tab";
 
 const UserProfile = () => {
   return (
